@@ -269,14 +269,14 @@ CREATE TABLE `normal_user` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `weight` int DEFAULT NULL,
   `age` int DEFAULT NULL,
   `height` int DEFAULT NULL,
   `isblocked` int DEFAULT '0',
   `phone` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -285,6 +285,7 @@ CREATE TABLE `normal_user` (
 
 LOCK TABLES `normal_user` WRITE;
 /*!40000 ALTER TABLE `normal_user` DISABLE KEYS */;
+INSERT INTO `normal_user` VALUES (1,'test','1','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',50,20,160,0,'12345678909'),(2,'string','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string');
 /*!40000 ALTER TABLE `normal_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -385,4 +386,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-18 18:59:40
+-- Dump completed on 2024-12-18 20:55:33
