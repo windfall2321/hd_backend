@@ -1,6 +1,7 @@
 package com.hd.hd_backend.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Date;
 
 @Schema(description = "用户注册登录DTO")
 public class UserDTO {
@@ -24,6 +25,9 @@ public class UserDTO {
     
     @Schema(description = "是否为登录请求")
     private boolean isLogin;
+
+    @Schema(description = "是否为登录请求")
+    private Date loginTime;
 
     public String getName() {
         return name;
@@ -80,4 +84,8 @@ public class UserDTO {
     public void setLogin(boolean login) {
         isLogin = login;
     }
+
+    public Date getLoginTime() {return loginTime;}
+
+    public void setLoginTime(Date logTime) {loginTime = logTime;}
 } 
