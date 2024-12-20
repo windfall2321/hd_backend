@@ -14,5 +14,5 @@ public class FoodRecord {
     @Schema(description = "记录时间")
     private Date recordTime;
     
-    // getters and setters
+    // getters and setter
 } 
