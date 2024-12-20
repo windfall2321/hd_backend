@@ -278,8 +278,9 @@ CREATE TABLE `normal_user` (
   `height` int DEFAULT NULL,
   `isblocked` int DEFAULT '0',
   `phone` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `phone` (`phone`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -288,7 +289,7 @@ CREATE TABLE `normal_user` (
 
 LOCK TABLES `normal_user` WRITE;
 /*!40000 ALTER TABLE `normal_user` DISABLE KEYS */;
-INSERT INTO `normal_user` VALUES (1,'test','1','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',50,20,160,0,'12345678909'),(2,'string','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string'),(3,'string123','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string123'),(4,'test','1','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',50,20,160,0,'12345678909'),(5,'string','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string'),(6,'string123','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string123'),(7,'test','1','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',50,20,160,0,'12345678909'),(8,'string','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string'),(9,'string','string123','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string123');
+INSERT INTO `normal_user` VALUES (1,'test','1','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',50,20,160,0,'12345678909'),(2,'string','string','https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800',0,0,0,0,'string');
 /*!40000 ALTER TABLE `normal_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -389,4 +390,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-20 11:12:48
+-- Dump completed on 2024-12-20 16:24:27
