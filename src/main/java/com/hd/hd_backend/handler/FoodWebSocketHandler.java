@@ -29,6 +29,7 @@ public class FoodWebSocketHandler extends TextWebSocketHandler {
             case "getAllFood":
                 List<FoodItem> allFood = foodMapper.findAll();
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsString(allFood)));
+                allFood.get(1).getName();
                 break;
             case "getFoodByName":
                 if (parts.length > 1) {
