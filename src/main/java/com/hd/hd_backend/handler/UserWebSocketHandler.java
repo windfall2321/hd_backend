@@ -133,6 +133,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "addFoodRecord":
                 if (parts.length > 1) {
                     try {
+                        System.out.println("Received data: " + parts[1]);  // 打印收到的食物记录数据
                         FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);  // 从消息中解析 FoodRecord 对象
                         foodRecordMapper.insert(foodRecord);  // 将 FoodRecord 插入到数据库
                         session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录添加成功\"}"));

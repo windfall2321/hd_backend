@@ -11,8 +11,8 @@
     </select>
 
     <insert id="insert" parameterType="com.hd.hd_backend.entity.FoodRecord">
-        INSERT INTO food_record (record_time, user_id, food_id, food_weight, calories, fat, protein, carbohydrates, sugar, sodium, potassium, dietary_fiber)
-        VALUES (#{recordTime}, #{userId}, #{foodId}, #{foodWeight}, #{calories}, #{fat}, #{protein}, #{carbohydrates}, #{sugar}, #{sodium}, #{potassium}, #{dietaryFiber})
+        INSERT INTO food_record (record_time, user_id, food_id, food_weight, calories, fat, protein, carbohydrates, sodium, potassium, dietary_fiber)
+        VALUES (#{recordTime}, #{userId}, #{foodId}, #{foodWeight}, #{calories}, #{fat}, #{protein}, #{carbohydrates}, #{sodium}, #{potassium}, #{dietaryFiber})
     </insert>
 
     <update id="update" parameterType="com.hd.hd_backend.entity.FoodRecord">
@@ -25,7 +25,6 @@
             fat = #{fat},
             protein = #{protein},
             carbohydrates = #{carbohydrates},
-            sugar = #{sugar},
             sodium = #{sodium},
             potassium = #{potassium},
             dietary_fiber = #{dietaryFiber}

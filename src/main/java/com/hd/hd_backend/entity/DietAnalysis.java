@@ -31,9 +31,6 @@ public class DietAnalysis {
     @Schema(description = "膳食纤维")
     private double dietaryFiber;
 
-    @Schema(description = "糖")
-    private double sugar;
-
     @Schema(description = "钠")
     private double sodium;
 
@@ -105,14 +102,6 @@ public class DietAnalysis {
         this.dietaryFiber = dietaryFiber;
     }
 
-    public double getSugar() {
-        return sugar;
-    }
-
-    public void setSugar(double sugar) {
-        this.sugar = sugar;
-    }
-
     public double getSodium() {
         return sodium;
     }
@@ -129,13 +118,12 @@ public class DietAnalysis {
         this.potassium = potassium;
     }
 
-    public void calculateDailyNutrients(List<FoodRecord> recordList) {
+    public void analyzeNutrients(List<FoodRecord> recordList) {
         int totalCalories = 0;
         double totalFat = 0;
         double totalProtein = 0;
         double totalCarbohydrates = 0;
         double totalDietaryFiber = 0;
-        double totalSugar = 0;
         double totalSodium = 0;
         double totalPotassium = 0;
 
@@ -145,7 +133,6 @@ public class DietAnalysis {
             totalProtein += foodRecord.getProtein();
             totalCarbohydrates += foodRecord.getCarbohydrates();
             totalDietaryFiber += foodRecord.getDietaryFiber();
-            totalSugar += foodRecord.getSugar();
             totalSodium += foodRecord.getSodium();
             totalPotassium += foodRecord.getPotassium();
         }
@@ -156,7 +143,6 @@ public class DietAnalysis {
         this.setProtein(totalProtein);
         this.setCarbohydrates(totalCarbohydrates);
         this.setDietaryFiber(totalDietaryFiber);
-        this.setSugar(totalSugar);
         this.setSodium(totalSodium);
         this.setPotassium(totalPotassium);
     }
@@ -170,12 +156,10 @@ public class DietAnalysis {
         int baseCalories=0;
         if(gender==0)
         {
-            double v = 6.75 * age;
             baseCalories= (int) (66.5+(13.75*weight)+(5.003*height)-(6.75 *age));
-
         }
         else{
-
+            baseCalories= (int) (66.5+(13.75*weight)+(5.003*height)-(6.75 *age));
         }
         int recommendCalories = 0;
         double recommendMinFat = 0;

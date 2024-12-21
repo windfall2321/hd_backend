@@ -35,9 +35,6 @@ public class FoodRecord {
     @Schema(description = "碳水化合物")
     private double carbohydrates;
 
-    @Schema(description = "糖")
-    private double sugar;
-
     @Schema(description = "钠")
     private double sodium;
 
@@ -118,14 +115,6 @@ public class FoodRecord {
 
     public void setCarbohydrates(double carbohydrates) {
         this.carbohydrates = carbohydrates;
-    }
-
-    public double getSugar() {
-        return sugar;
-    }
-
-    public void setSugar(double sugar) {
-        this.sugar = sugar;
     }
 
     public double getSodium() {
