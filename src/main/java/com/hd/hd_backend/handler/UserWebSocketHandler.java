@@ -5,6 +5,7 @@ import com.hd.hd_backend.dto.*;
 import com.hd.hd_backend.entity.*;
 import com.hd.hd_backend.mapper.*;
 import com.hd.hd_backend.service.*;
+import com.hd.hd_backend.utils.WebSocketSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -48,11 +49,17 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     System.out.println("解析后的用户信息: " + userDTO); // 输出解析后的用户信息
                     try {
                         NormalUser user = userService.register(userDTO);
+
+
+
                         String successMessage = String.format(
-                                "{\"status\":200,\"message\":\"注册成功！用户名为%s\"}",
-                                user.getName()
+                                "{\"status\":200,\"message\":\"注册成功！用户为%s\"}",
+                                UserToJson(user)
                         );
                         session.sendMessage(new TextMessage(successMessage));
+
+                        WebSocketSessionManager.addSession(user.getUserId(), session);
+                        System.out.println(user.getUserId()); // 输出
                     } catch (Exception e) {
                         switch (e.getMessage()){
                             case "用户名已存在":
@@ -77,7 +84,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     try {
                         NormalUser user = userService.login(userDTO);
                         session.sendMessage(new TextMessage(UserToJson(user)) );
-
+                        WebSocketSessionManager.addSession(user.getUserId(), session);
+                        System.out.println(user.getUserId()); // 输出
                     }catch (Exception e) {
                         // 根据异常消息返回相应的错误码和错误信息
                         String errorResponse = handleLoginError(e.getMessage());
@@ -90,7 +98,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "getAllFood":
                 List<FoodItem> allFood = foodMapper.findAll();
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsString(allFood)));
-                allFood.get(1).getName();
+                allFood.get(1).getFoodid();
                 break;
             case "getFoodByName":
                 if (parts.length > 1) {

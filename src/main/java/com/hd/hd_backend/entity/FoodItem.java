@@ -2,8 +2,6 @@ package com.hd.hd_backend.entity;
 
 import com.hd.hd_backend.utils.JsonUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
 
 
 
@@ -11,7 +9,7 @@ import lombok.Setter;
 public class FoodItem {
     // getters and setters
     @Schema(description = "食物ID")
-    private Integer food_id;
+    private Integer foodid;
     
     @Schema(description = "食物名称")
     private String name;
@@ -40,8 +38,8 @@ public class FoodItem {
     @Schema(description = "钠")
     private Double sodium;
 
-    public void setFood_id(Integer food_id) {
-        this.food_id = food_id;
+    public void setFoodid(Integer id) {
+        this.foodid = id;
     }
     public void setName(String name) {
         this.name = name;
@@ -60,10 +58,10 @@ public class FoodItem {
     public void setCarbohydrates(Double carbohydrates) {
         this.carbohydrates = carbohydrates;
     }
-    public Double getDietary_fiber() {
+    public Double getDietaryFiber() {
         return dietary_fiber;
     }
-    public void setDietary_fiber(Double dietary_fiber) {
+    public void setDietaryFiber(Double dietary_fiber) {
         this.dietary_fiber = dietary_fiber;
     }
     public Double getPotassium() {
@@ -78,8 +76,8 @@ public class FoodItem {
     public void setSodium(Double sodium) {
         this.sodium = sodium;
     }
-    public Integer getFood_id() {
-        return food_id;
+    public Integer getFoodid() {
+        return foodid;
     }
     public String getName() {
         return name;
@@ -93,6 +91,7 @@ public class FoodItem {
 
     public String NutritionalDetails() {
         Object nutritionInfo = new Object() {
+            public String food_id= String.valueOf(foodid);
             public String food_name = name;
             public String food_type = type;
             public String calories_value = String.valueOf(calories);
@@ -108,4 +107,5 @@ public class FoodItem {
         return JsonUtils.toJson(nutritionInfo);
     }
 
-} 
+
+}
