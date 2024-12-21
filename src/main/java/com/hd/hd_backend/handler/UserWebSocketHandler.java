@@ -49,15 +49,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     System.out.println("解析后的用户信息: " + userDTO); // 输出解析后的用户信息
                     try {
                         NormalUser user = userService.register(userDTO);
-                        NormalUser userResponse = new NormalUser();
-                        userResponse.setUserId(user.getUserId());
-                        userResponse.setName(user.getName());
-                        userResponse.setProfilePicture(user.getProfilePicture());
-                        userResponse.setWeight(user.getWeight());
-                        userResponse.setAge(user.getAge());
-                        userResponse.setHeight(user.getHeight());
-                        userResponse.setIsblocked(user.getIsblocked());
-                        userResponse.setPhone(user.getPhone());
+
 
 
                         String successMessage = String.format(
@@ -106,7 +98,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "getAllFood":
                 List<FoodItem> allFood = foodMapper.findAll();
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsString(allFood)));
-                allFood.get(1).getName();
+                allFood.get(1).getFoodid();
                 break;
             case "getFoodByName":
                 if (parts.length > 1) {
