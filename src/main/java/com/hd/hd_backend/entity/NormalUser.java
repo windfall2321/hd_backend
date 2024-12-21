@@ -142,10 +142,7 @@ public class NormalUser {
         // 查看评论
     }
     
-    public Object getPreferences() {
-        // 获取用户偏好设置
-        return null;
-    }
+
     
     public static NormalUser getUserById(String userId) {
         // 根据ID获取用户
@@ -177,27 +174,17 @@ public class NormalUser {
         // 添加违规记录
     }
     
-    public List<Object> getRecommendations() {
-        // 获取推荐
-        return null;
-    }
+
     
     public boolean addFoodRecord(FoodItem foodItem) {
         // 添加食物记录
         return true;
     }
     
-    public List<String> getDietaryRestrictions() {
-        // 获取饮食限制
-        return null;
-    }
+
     
     public void addExercise(String exerciseType, int duration) {
         // 添加运动记录
     }
-    
-    public String getExerciseLevel() {
-        // 获取运动等级
-        return null;
-    }
+
 } 
