@@ -1,20 +1,25 @@
 package com.hd.hd_backend.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper; // 导入 ObjectMapper
-import com.hd.hd_backend.dto.UserDTO;
-import com.hd.hd_backend.entity.NormalUser;
-import com.hd.hd_backend.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hd.hd_backend.dto.*;
+import com.hd.hd_backend.entity.*;
+import com.hd.hd_backend.mapper.*;
+import com.hd.hd_backend.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.*;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 @Component
 public class UserWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private UserService userService;
+    @Autowired
+    private FoodMapper foodMapper;
     // 错误映射
     private static final Map<String, String> errorMapping = new HashMap<>();
     static {
@@ -35,6 +40,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
         String[] parts = payload.split(":", 2); // 限制分割为 2 部分
         String action = parts[0];
         UserDTO userDTO;
+
         switch (action) {
             case "register":
                 userDTO = parseUserDTO(parts[1]);
@@ -42,7 +48,11 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     System.out.println("解析后的用户信息: " + userDTO); // 输出解析后的用户信息
                     try {
                         NormalUser user = userService.register(userDTO);
-                        session.sendMessage(new TextMessage("注册成功: " + user.getName()));
+                        String successMessage = String.format(
+                                "{\"status\":200,\"message\":\"注册成功！用户名为%s\"}",
+                                user.getName()
+                        );
+                        session.sendMessage(new TextMessage(successMessage));
                     } catch (Exception e) {
                         switch (e.getMessage()){
                             case "用户名已存在":
@@ -77,6 +87,22 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage("{\"error_code\":\"1\",\"error_message\":\"数据格式错误\"}"));
                 }
                 break;
+            case "getAllFood":
+                List<FoodItem> allFood = foodMapper.findAll();
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsString(allFood)));
+                allFood.get(1).getName();
+                break;
+            case "getFoodByName":
+                if (parts.length > 1) {
+                    FoodItem food = foodMapper.findByName(parts[1]);
+                    if (food != null) {
+                        session.sendMessage(new TextMessage(food.NutritionalDetails()));
+                    } else {
+                        session.sendMessage(new TextMessage("未找到该食物"));
+                    }
+                }
+                break;
+
             default:
                 session.sendMessage(new TextMessage("未知操作"));
         }
