@@ -74,7 +74,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         session.sendMessage(new TextMessage(errorResponse));
                     }
                                     } else {
-                    session.sendMessage(new TextMessage("{\"error_code\":\"1\",\"error_message\":\"登录失败\"}"));
+                    session.sendMessage(new TextMessage("{\"error_code\":\"1\",\"error_message\":\"数据格式错误\"}"));
                 }
                 break;
             default:
