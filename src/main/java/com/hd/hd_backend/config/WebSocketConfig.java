@@ -9,19 +9,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
     private final UserWebSocketHandler userWebSocketHandler;
-    //private final FoodWebSocketHandler foodWebSocketHandler;
 
-    public WebSocketConfig(UserWebSocketHandler userWebSocketHandler,
-                         FoodWebSocketHandler foodWebSocketHandler) {
+
+    public WebSocketConfig(UserWebSocketHandler userWebSocketHandler) {
         this.userWebSocketHandler = userWebSocketHandler;
-        //this.foodWebSocketHandler = foodWebSocketHandler;
+
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(userWebSocketHandler, "/websocket")
                 .setAllowedOrigins("*");
-//        registry.addHandler(foodWebSocketHandler, "/food-websocket")
-//                .setAllowedOrigins("*");
+
     }
 }
