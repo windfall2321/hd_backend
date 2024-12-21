@@ -2,8 +2,6 @@ package com.hd.hd_backend.entity;
 
 import com.hd.hd_backend.utils.JsonUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
 
 
 
@@ -93,6 +91,7 @@ public class FoodItem {
 
     public String NutritionalDetails() {
         Object nutritionInfo = new Object() {
+            public String foodid= String.valueOf(food_id);
             public String food_name = name;
             public String food_type = type;
             public String calories_value = String.valueOf(calories);

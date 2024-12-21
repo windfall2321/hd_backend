@@ -33,14 +33,14 @@ public class NormalUser {
     private String phone;
 
     // Getters and Setters
+
+
     public Integer getUserId() {
         return userId;
     }
-
-    public void setUserId(Integer userId) {
+public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
+}
     public String getName() {
         return name;
     }
