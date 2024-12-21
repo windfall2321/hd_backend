@@ -10,7 +10,7 @@
         SELECT * FROM normal_user WHERE phone = #{phone}
     </select>
     
-    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser"  useGeneratedKeys="true" keyProperty="userId">
+    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser"  useGeneratedKeys="true" keyProperty="user_id">
         INSERT INTO normal_user (name, password, weight, age, height, phone, isblocked, profile_picture)
         VALUES (#{name}, #{password}, #{weight}, #{age}, #{height}, #{phone}, #{isblocked}, #{profilePicture})
     </insert>

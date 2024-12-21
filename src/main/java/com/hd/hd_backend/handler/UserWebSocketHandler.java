@@ -8,6 +8,7 @@ import com.hd.hd_backend.service.*;
 import com.hd.hd_backend.utils.WebSocketSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -143,5 +144,18 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
         // 从映射中获取错误响应
         return errorMapping.getOrDefault(errorMessage, "{\"error_code\":500,\"error_message\":\"登录失败\"}");
     }
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        Integer userId = getUserIdFromSession(session);
+        if (userId != null) {
+            WebSocketSessionManager.removeSession(userId);
+        }
+        System.out.println("WebSocket连接已关闭: " + session.getId());
+    }
 
+    private Integer getUserIdFromSession(WebSocketSession session) {
+        // 这里需要实现一个方法来根据session找到对应的userId
+        // 这里只是一个示例实现，实际应用中需要实现一个更可靠的方法
+        return Integer.parseInt(session.getId());
+    }
 }
