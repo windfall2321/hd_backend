@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.FoodRecordMapper">
+
+    <select id="findByUserId" resultType="com.hd.hd_backend.entity.FoodRecord">
+        SELECT * FROM food_record WHERE user_id = #{userId}
+    </select>
+
+    <select id="findById" resultType="com.hd.hd_backend.entity.FoodRecord">
+        SELECT * FROM food_record WHERE food_record_id = #{foodRecordId}
+    </select>
+
+    <insert id="insert" parameterType="com.hd.hd_backend.entity.FoodRecord">
+        INSERT INTO food_record (record_time, user_id, food_id, food_weight, calories, fat, protein, carbohydrates, sugar, sodium, potassium, dietary_fiber)
+        VALUES (#{recordTime}, #{userId}, #{foodId}, #{foodWeight}, #{calories}, #{fat}, #{protein}, #{carbohydrates}, #{sugar}, #{sodium}, #{potassium}, #{dietaryFiber})
+    </insert>
+
+    <update id="update" parameterType="com.hd.hd_backend.entity.FoodRecord">
+        UPDATE food_record
+        SET record_time = #{recordTime},
+            user_id = #{userId},
+            food_id = #{foodId},
+            food_weight = #{foodWeight},
+            calories = #{calories},
+            fat = #{fat},
+            protein = #{protein},
+            carbohydrates = #{carbohydrates},
+            sugar = #{sugar},
+            sodium = #{sodium},
+            potassium = #{potassium},
+            dietary_fiber = #{dietaryFiber}
+        WHERE food_record_id = #{foodRecordId}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM food_record WHERE food_record_id = #{foodRecordId}
+    </delete>
+</mapper>

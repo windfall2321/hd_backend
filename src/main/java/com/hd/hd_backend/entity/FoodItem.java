@@ -34,6 +34,9 @@ public class FoodItem {
     @Schema(description = "膳食纤维")
     private Double dietary_fiber;
 
+    @Schema(description = "糖")
+    private Double sugar;
+
     @Schema(description = "钾")
     private Double potassium;
 
@@ -72,6 +75,12 @@ public class FoodItem {
     public void setPotassium(Double potassium) {
         this.potassium = potassium;
     }
+    public Double getSugar() {
+        return sugar;
+    }
+    public void setSugar(Double sugar) {
+        this.sugar = sugar;
+    }
     public Double getSodium() {
         return sodium;
     }
@@ -100,6 +109,7 @@ public class FoodItem {
             public String protein_value = String.valueOf(protein);
             public String carbohydrates_value = String.valueOf(carbohydrates);
             public String dietary_fiber_value = String.valueOf(dietary_fiber);
+            public String sugar_value = String.valueOf(sugar);
             public String potassium_value = String.valueOf(potassium);
             public String sodium_value = String.valueOf(sodium);
         };
