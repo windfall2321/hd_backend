@@ -170,13 +170,14 @@ public class DietAnalysis {
         int baseCalories=0;
         if(gender==0)
         {
-            baseCalories= (int) (66.5+(13.75*weight)+(5.003*height)−(6.75*age));
+            double v = 6.75 * age;
+            baseCalories= (int) (66.5+(13.75*weight)+(5.003*height)-(6.75 *age));
 
         }
         else{
 
         }
-        int recommendCalories = Calories;
+        int recommendCalories = 0;
         double recommendMinFat = 0;
         double recommendMaxFat = 0;
 
