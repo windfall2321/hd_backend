@@ -22,16 +22,20 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public void addExerciseItem(ExerciseItem exerciseItem) {
+    public void addExerciseItem(ExerciseItem exerciseItem)throws Exception {
 
         exerciseItemMapper.insertExerciseItem(exerciseItem);
 
     }
 
     @Override
-    public void  addExerciseRecord(ExerciseRecord exerciseRecord)
+    public void  addExerciseRecord(ExerciseRecord exerciseRecord)throws Exception
     {
         ExerciseItem exe=exerciseItemMapper.getExerciseItemById(exerciseRecord.getExerciseId());
+        if (exe==null)
+        {
+            throw new Exception("exercise item not found");
+        }
         LocalTime time = LocalTime.parse(exerciseRecord.getDuration()); // 转换为 LocalTime
         double hours = time.getHour() + time.getMinute() / 60.0 + time.getSecond() / 3600.0; // 计算小时数
         exerciseRecord.setBurnedCaloris((int) (hours*exe.getCaloriesPerHour()));
@@ -39,7 +43,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public  List<ExerciseRecord>  getUserExerciseRecord(int userId)
+    public  List<ExerciseRecord>  getUserExerciseRecord(int userId)throws Exception
     {
         return exerciseRecordMapper.getExerciseRecordsByUserId(userId);
     }

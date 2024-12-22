@@ -111,31 +111,43 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     if (food != null) {
                         session.sendMessage(new TextMessage(food.NutritionalDetails()));
                     } else {
-                        session.sendMessage(new TextMessage("未找到该食物"));
+                        session.sendMessage(new TextMessage("{\"error_code\":\"1\",\"error_message\":\"食物未找到\"}"));
                     }
                 }
                 break;
             case "getAllExerciseItem":
                 if(!session.getAttributes().containsKey("userId"))
                 {
-                    session.sendMessage(new TextMessage("请先登录"));
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
                 }
                 else{
+                    try {
+                        List<ExerciseItem> exercises= exerciseService.getAllExerciseItem();
+                        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
+                    }
+                    catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
+                    }
 
-                    List<ExerciseItem> exercises= exerciseService.getAllExerciseItem();
-                    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
                 }
                 break;
             case "addExerciseItem":
                 if(!session.getAttributes().containsKey("userId"))
                 {
-                    session.sendMessage(new TextMessage("请先登录"));
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
                 }
                 else{
                     if (parts.length > 1) {
-                        ExerciseItem newExerciseItem = JsonUtils.fromJson(parts[1], ExerciseItem.class);
-                        exerciseService.addExerciseItem(newExerciseItem);
-                        session.sendMessage(new TextMessage("success"));
+                        try{
+                            ExerciseItem newExerciseItem = JsonUtils.fromJson(parts[1], ExerciseItem.class);
+                            exerciseService.addExerciseItem(newExerciseItem);
+                            session.sendMessage(new TextMessage("{\"status\":\"200\",\"message\":\"添加成功\"}"));
+
+                        }
+                        catch (Exception e) {
+                            session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"添加失败\"}"));
+                        }
+
                     }
                 }
                 break;
@@ -145,14 +157,21 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
                 if(!session.getAttributes().containsKey("userId"))
                 {
-                    session.sendMessage(new TextMessage("请先登录"));
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
                 }
                 else{
                     if (parts.length > 1) {
-                        int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
-                        exerciseRecord.setUserId(user_id);
-                        exerciseService.addExerciseRecord(exerciseRecord);
-                        session.sendMessage(new TextMessage("success"));
+                        try{
+                            int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                            exerciseRecord.setUserId(user_id);
+                            exerciseService.addExerciseRecord(exerciseRecord);
+                            session.sendMessage(new TextMessage("success"));
+
+                        }
+                        catch (Exception e){
+                            session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
+                        }
+
                     }
                 }
                 break;
@@ -160,20 +179,26 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "getUserExerciseRecord":
                 if(!session.getAttributes().containsKey("userId"))
                 {
-                    session.sendMessage(new TextMessage("请先登录"));
+                    session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"请先登录\"}"));
                 }
                 else{
                     if (parts.length > 1) {
-                        int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
-
-                        List<ExerciseRecord> exercises= exerciseService.getUserExerciseRecord(user_id);
-                        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
-
+                        try {
+                            int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                            List<ExerciseRecord> exercises= exerciseService.getUserExerciseRecord(user_id);
+                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
+                        }
+                        catch (Exception e) {
+                            session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                        }
+                    }
+                    else {
+                        session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
                     }
                 }
                 break;
             default:
-                session.sendMessage(new TextMessage("未知操作"));
+                session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"格式错误\"}"));
         }
     }
     private UserDTO parseUserDTO(String data) {

@@ -14,5 +14,8 @@
         INSERT INTO normal_user (name, password, weight, age, height, phone, isblocked, profile_picture)
         VALUES (#{name}, #{password}, #{weight}, #{age}, #{height}, #{phone}, #{isblocked}, #{profilePicture})
     </insert>
-    
+
+    <update id="blockById">
+        UPDATE normal_user SET isblocked=1 WHERE user_id=#{id}
+    </update>
 </mapper> 
