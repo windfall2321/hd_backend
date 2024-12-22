@@ -8,4 +8,5 @@
 <select id="findByName" resultType="com.hd.hd_backend.entity.FoodItem">
 SELECT * FROM healthy_diet.food_item WHERE name = #{name}
 </select>
+
         </mapper>

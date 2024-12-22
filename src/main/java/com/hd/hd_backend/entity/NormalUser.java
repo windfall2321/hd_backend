@@ -25,6 +25,12 @@ public class NormalUser {
     
     @Schema(description = "身高(cm)")
     private Integer height;
+
+    @Schema(description = "性别")
+    private Integer gender;
+
+    @Schema(description = "活动因子")
+    private Integer activity_factor;
     
     @Schema(description = "是否被封禁(0:否 1:是)")
     private Integer isblocked;
@@ -79,6 +85,20 @@ public class NormalUser {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Integer getGender() {return gender;}
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getActivityFactor() {
+        return activity_factor;
+    }
+
+    public void setActivityFactor(Integer activity_factor) {
+        this.activity_factor =activity_factor;
     }
 
     public Integer getHeight() {
