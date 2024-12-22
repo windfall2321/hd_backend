@@ -21,6 +21,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private UserService userService;
     @Autowired
     private FoodMapper foodMapper;
+    @Autowired
+    private FoodRecordMapper foodRecordMapper;
     // 错误映射
     private static final Map<String, String> errorMapping = new HashMap<>();
     static {
@@ -110,7 +112,80 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     }
                 }
                 break;
-
+            case "getAllFoodRecord":
+                if (parts.length > 1) {
+                    int userId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
+                    List<FoodRecord> foodRecords = foodRecordMapper.findByUserId(userId);
+                    if (foodRecords != null && !foodRecords.isEmpty()) {
+                        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(foodRecords)));
+                    } else {
+                        session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                    }
+                } else {
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
+                }
+                break;
+            case "getFoodRecord":
+                if (parts.length > 1) {
+                    int foodRecordId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
+                    FoodRecord foodRecord = foodRecordMapper.findById(foodRecordId);
+                    if (foodRecord != null) {
+                        session.sendMessage(new TextMessage(foodRecord.foodRecordDetails()));
+                    } else {
+                        session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                    }
+                } else {
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
+                }
+                break;
+            case "addFoodRecord":
+                if (parts.length > 1) {
+                    try {
+                        System.out.println("Received data: " + parts[1]);  // 打印收到的食物记录数据
+                        FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);  // 从消息中解析 FoodRecord 对象
+                        foodRecordMapper.insert(foodRecord);  // 将 FoodRecord 插入到数据库
+                        session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录添加成功\"}"));
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"添加食物记录失败\"}"));
+                    }
+                } else {
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录数据\"}"));
+                }
+                break;
+            case "updateFoodRecord":
+                if (parts.length > 1) {
+                    try {
+                        FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);  // 从消息中解析 FoodRecord 对象
+                        int updatedRows = foodRecordMapper.update(foodRecord);  // 更新记录
+                        if (updatedRows > 0) {
+                            session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录更新成功\"}"));
+                        } else {
+                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                        }
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"更新食物记录失败\"}"));
+                    }
+                } else {
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录数据\"}"));
+                }
+                break;
+            case "deleteFoodRecord":
+                if (parts.length > 1) {
+                    try {
+                        int foodRecordId = Integer.parseInt(parts[1]);  // 解析出 foodRecordId
+                        int deletedRows = foodRecordMapper.delete(foodRecordId);  // 删除记录
+                        if (deletedRows > 0) {
+                            session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录删除成功\"}"));
+                        } else {
+                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                        }
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"删除食物记录失败\"}"));
+                    }
+                } else {
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录ID\"}"));
+                }
+                break;
             default:
                 session.sendMessage(new TextMessage("未知操作"));
         }
