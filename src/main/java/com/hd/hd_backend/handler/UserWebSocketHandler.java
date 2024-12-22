@@ -5,6 +5,7 @@ import com.hd.hd_backend.dto.*;
 import com.hd.hd_backend.entity.*;
 import com.hd.hd_backend.mapper.*;
 import com.hd.hd_backend.service.*;
+import com.hd.hd_backend.utils.JsonUtils;
 import com.hd.hd_backend.utils.WebSocketSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ import java.util.Map;
 public class UserWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private UserService userService;
+    @Autowired
+    private ExerciseService exerciseService;
     @Autowired
     private FoodMapper foodMapper;
     // 错误映射
@@ -59,6 +62,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         session.sendMessage(new TextMessage(successMessage));
 
                         WebSocketSessionManager.addSession(user.getUserId(), session);
+                        session.getAttributes().put("userId", user.getUserId());
                         System.out.println(user.getUserId()); // 输出
                     } catch (Exception e) {
                         switch (e.getMessage()){
@@ -85,6 +89,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         NormalUser user = userService.login(userDTO);
                         session.sendMessage(new TextMessage(UserToJson(user)) );
                         WebSocketSessionManager.addSession(user.getUserId(), session);
+                        session.getAttributes().put("userId", user.getUserId());
                         System.out.println(user.getUserId()); // 输出
                     }catch (Exception e) {
                         // 根据异常消息返回相应的错误码和错误信息
@@ -110,7 +115,63 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     }
                 }
                 break;
+            case "getAllExerciseItem":
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("请先登录"));
+                }
+                else{
 
+                    List<ExerciseItem> exercises= exerciseService.getAllExerciseItem();
+                    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
+                }
+                break;
+            case "addExerciseItem":
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("请先登录"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        ExerciseItem newExerciseItem = JsonUtils.fromJson(parts[1], ExerciseItem.class);
+                        exerciseService.addExerciseItem(newExerciseItem);
+                        session.sendMessage(new TextMessage("success"));
+                    }
+                }
+                break;
+
+            case "addExerciseRecord":
+                ExerciseRecord exerciseRecord = JsonUtils.fromJson(parts[1], ExerciseRecord.class);
+
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("请先登录"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                        exerciseRecord.setUserId(user_id);
+                        exerciseService.addExerciseRecord(exerciseRecord);
+                        session.sendMessage(new TextMessage("success"));
+                    }
+                }
+                break;
+
+            case "getUserExerciseRecord":
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("请先登录"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+
+                        List<ExerciseRecord> exercises= exerciseService.getUserExerciseRecord(user_id);
+                        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
+
+                    }
+                }
+                break;
             default:
                 session.sendMessage(new TextMessage("未知操作"));
         }
