@@ -9,4 +9,5 @@ public interface UserMapper {
     NormalUser findByName(@Param("name") String name);
     NormalUser findByPhone(@Param("phone") String phone);
     void insert(NormalUser user);
+    void blockById (@Param("id") int id);
 } 

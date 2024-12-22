@@ -1,10 +1,15 @@
 package com.hd.hd_backend.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Schema(description = "普通用户实体")
 public class NormalUser {
+
+
+
     @Schema(description = "用户ID")
     private Integer userId;
     
