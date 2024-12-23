@@ -10,9 +10,12 @@
         SELECT * FROM normal_user WHERE phone = #{phone}
     </select>
     
-    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser">
+    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser"  useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO normal_user (name, password, weight, age, height, phone, isblocked, profile_picture)
         VALUES (#{name}, #{password}, #{weight}, #{age}, #{height}, #{phone}, #{isblocked}, #{profilePicture})
     </insert>
-    
+
+    <update id="blockById">
+        UPDATE normal_user SET isblocked=1 WHERE user_id=#{id}
+    </update>
 </mapper> 

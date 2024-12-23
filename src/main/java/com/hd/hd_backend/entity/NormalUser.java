@@ -1,10 +1,15 @@
 package com.hd.hd_backend.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Schema(description = "普通用户实体")
 public class NormalUser {
+
+
+
     @Schema(description = "用户ID")
     private Integer userId;
     
@@ -39,14 +44,14 @@ public class NormalUser {
     private String phone;
 
     // Getters and Setters
+
+
     public Integer getUserId() {
         return userId;
     }
-
-    public void setUserId(Integer userId) {
+public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
+}
     public String getName() {
         return name;
     }

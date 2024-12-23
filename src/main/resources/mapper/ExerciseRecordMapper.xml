@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.ExerciseRecordMapper">
+
+    <insert id="addExerciseRecord" parameterType="com.hd.hd_backend.entity.ExerciseRecord">
+        INSERT INTO exercise_record (date, duration, exercise_id, burned_caloris, user_id)
+        VALUES (#{date}, #{duration}, #{exerciseId}, #{burnedCaloris}, #{userId})
+    </insert>
+
+    <update id="updateExerciseRecord" parameterType="com.hd.hd_backend.entity.ExerciseRecord">
+        UPDATE exercise_record
+        SET date = #{date},
+            duration = #{duration},
+            exercise_id = #{exerciseId},
+            burned_caloris = #{burnedCaloris},
+            user_id = #{userId}
+        WHERE exercise_record_id = #{exerciseRecordId}
+    </update>
+
+    <delete id="deleteExerciseRecord" parameterType="int">
+        DELETE FROM exercise_record
+        WHERE exercise_record_id = #{id}
+    </delete>
+
+    <select id="getExerciseRecord" parameterType="int" resultType="com.hd.hd_backend.entity.ExerciseRecord">
+        SELECT * FROM exercise_record
+        WHERE exercise_record_id = #{id}
+    </select>
+
+    <select id="getExerciseRecords" resultType="com.hd.hd_backend.entity.ExerciseRecord">
+        SELECT * FROM exercise_record
+    </select>
+
+    <select id="getExerciseRecordsByUserId" resultType="com.hd.hd_backend.entity.ExerciseRecord">
+        SELECT * FROM exercise_record WHERE user_id=#{user_id}
+    </select>
+
+</mapper>

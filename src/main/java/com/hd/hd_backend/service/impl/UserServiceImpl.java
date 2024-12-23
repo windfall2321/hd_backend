@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
         user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
         // 保存到数据库
         userMapper.insert(user);
-        
-        return user;
+        NormalUser normalUser =userMapper.findByPhone(userDTO.getPhone());
+        return normalUser;
     }
 
     @Override

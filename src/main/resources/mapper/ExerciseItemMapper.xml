@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.ExerciseItemMapper">
+
+    <select id="getAllExerciseItems" resultType="com.hd.hd_backend.entity.ExerciseItem">
+        SELECT * FROM exercise_item
+    </select>
+
+    <select id="getExerciseItemById" parameterType="int" resultType="com.hd.hd_backend.entity.ExerciseItem">
+        SELECT * FROM exercise_item WHERE exercise_id = #{id}
+    </select>
+
+    <insert id="insertExerciseItem" parameterType="com.hd.hd_backend.entity.ExerciseItem">
+        INSERT INTO exercise_item (name,calories_per_hour)
+        VALUES (#{name},  #{caloriesPerHour})
+    </insert>
+
+</mapper>
