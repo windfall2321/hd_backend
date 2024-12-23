@@ -88,6 +88,19 @@ public class FoodItem {
     public Integer getCalories() {
         return calories;
     }
+    public void setFat(Double Fat){
+        this.fat=Fat;
+    }
+
+    public Double getFat() {
+        return fat;
+    }
+    public void setProtein(Double protein) {
+        this.protein=protein;
+    }
+    public Double getProtein() {
+        return protein;
+    }
 
     public String NutritionalDetails() {
         Object nutritionInfo = new Object() {
