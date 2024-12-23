@@ -23,7 +23,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private ExerciseService exerciseService;
     @Autowired
-    private FoodMapper foodMapper;
+    private FoodService foodService;
     @Autowired
     private FoodRecordMapper foodRecordMapper;
     // 错误映射
@@ -103,13 +103,12 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 break;
             case "getAllFood":
-                List<FoodItem> allFood = foodMapper.findAll();
+                List<FoodItem> allFood = foodService.getAllFoodItems();
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsString(allFood)));
-                allFood.get(1).getFoodid();
                 break;
             case "getFoodByName":
                 if (parts.length > 1) {
-                    FoodItem food = foodMapper.findByName(parts[1]);
+                    FoodItem food = foodService.getFoodItemByName(parts[1]);
                     if (food != null) {
                         session.sendMessage(new TextMessage(food.NutritionalDetails()));
                     } else {
@@ -271,7 +270,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"删除食物记录失败\"}"));
                     }
                 } else {
-                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录ID\"}"));
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记���ID\"}"));
                 }
                 break;
             default:
