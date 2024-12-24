@@ -10,11 +10,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
     private final UserWebSocketHandler userWebSocketHandler;
-    private final AdminWebSocketHandler adminWebSocketHandler;
 
-    public WebSocketConfig(UserWebSocketHandler userWebSocketHandler, AdminWebSocketHandler adminWebSocketHandler) {
+
+    public WebSocketConfig(UserWebSocketHandler userWebSocketHandler) {
         this.userWebSocketHandler = userWebSocketHandler;
-        this.adminWebSocketHandler = adminWebSocketHandler;
+
 
     }
 
@@ -22,8 +22,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(userWebSocketHandler, "/websocket")
                 .setAllowedOrigins("*");
-        registry.addHandler(adminWebSocketHandler, "/websocket-admin")
-                .setAllowedOrigins("*");
+
 
     }
 }
