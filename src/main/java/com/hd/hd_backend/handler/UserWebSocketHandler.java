@@ -58,7 +58,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
 
                         String successMessage = String.format(
-                                "{\"status\":200,\"message\":\"注册成功！用户为%s\"}",
+                                "{\"status\":200,\"message\":\"注册成功!\",\"user\":%s}",
                                 UserToJson(user)
                         );
                         session.sendMessage(new TextMessage(successMessage));
