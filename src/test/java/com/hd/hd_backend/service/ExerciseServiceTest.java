@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service;
 
+import com.hd.hd_backend.dto.ExerciseRecordDTO;
 import com.hd.hd_backend.entity.ExerciseItem;
 import com.hd.hd_backend.entity.ExerciseRecord;
 import com.hd.hd_backend.mapper.ExerciseItemMapper;
@@ -81,10 +82,19 @@ public class ExerciseServiceTest {
 
     @Test
     void testGetUserExerciseRecord() throws Exception {
-        List<ExerciseRecord> exerciseRecords = Arrays.asList(exerciseRecord);
+        ExerciseRecordDTO exerciseRecordDTO = new ExerciseRecordDTO();
+        exerciseRecordDTO.setExerciseRecordId(1);
+        exerciseRecordDTO.setUserId(1);
+        exerciseRecordDTO.setExerciseId(1);
+        exerciseRecordDTO.setDuration("00:30:00");
+        exerciseRecordDTO.setDate("2024-01-01 10:00:00");
+        exerciseRecordDTO.setExerciseName("跑步");
+        exerciseRecordDTO.setBurnedCaloris(200);
+
+        List<ExerciseRecordDTO> exerciseRecords = Arrays.asList(exerciseRecordDTO);
         when(exerciseRecordMapper.getExerciseRecordsByUserId(1)).thenReturn(exerciseRecords);
 
-        List<ExerciseRecord> result = exerciseService.getUserExerciseRecord(1);
+        List<ExerciseRecordDTO> result = exerciseService.getUserExerciseRecord(1);
 
         assertNotNull(result);
         assertEquals(1, result.size());

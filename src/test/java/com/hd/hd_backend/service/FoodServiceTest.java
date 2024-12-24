@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service;
 
+import com.hd.hd_backend.dto.FoodRecordDTO;
 import com.hd.hd_backend.entity.FoodItem;
 import com.hd.hd_backend.entity.FoodRecord;
 import com.hd.hd_backend.mapper.FoodMapper;
@@ -82,10 +83,17 @@ public class FoodServiceTest {
 
     @Test
     void testGetFoodRecordsByUserId() throws Exception {
-        List<FoodRecord> foodRecords = Arrays.asList(foodRecord);
+        FoodRecordDTO foodRecordDTO = new FoodRecordDTO();
+        foodRecordDTO.setFoodRecordId(1);
+        foodRecordDTO.setUserId(1);
+        foodRecordDTO.setFoodId(1);
+        foodRecordDTO.setCalories(52);
+        foodRecordDTO.setFoodname("苹果");
+
+        List<FoodRecordDTO> foodRecords = Arrays.asList(foodRecordDTO);
         when(foodRecordMapper.findByUserId(1)).thenReturn(foodRecords);
 
-        List<FoodRecord> result = foodService.getFoodRecordsByUserId(1);
+        List<FoodRecordDTO> result = foodService.getFoodRecordsByUserId(1);
 
         assertNotNull(result);
         assertEquals(1, result.size());
