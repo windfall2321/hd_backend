@@ -35,10 +35,11 @@ public class UserServiceTest {
         testUser.setAge(25);
         testUser.setHeight(175);
         testUser.setPhone("13800138000");
+        testUser.setIsblocked(0);
         
         // 设置模拟行为
         when(userMapper.findByPhone("13800138000")).thenReturn(testUser);
-        when(userMapper.insert(any())).thenReturn(1);  // 使用any()而不是any(NormalUser.class)
+        doNothing().when(userMapper).insert(any(NormalUser.class));
     }
 
     @Test
@@ -63,7 +64,7 @@ public class UserServiceTest {
         mockUser.setPhone(userDTO.getPhone());
         
         when(userMapper.findByPhone(userDTO.getPhone())).thenReturn(mockUser);
-        when(userMapper.insert(any())).thenReturn(1);  // 使用any()而不是any(NormalUser.class)
+        doNothing().when(userMapper).insert(any(NormalUser.class));  // 修改为doNothing()
         
         // 执行测试
         NormalUser result = userService.register(userDTO);
@@ -71,15 +72,21 @@ public class UserServiceTest {
         // 验证结果
         assertNotNull(result);
         assertEquals(userDTO.getName(), result.getName());
-        verify(userMapper).insert(any());  // 使用any()而不是any(NormalUser.class)
+        verify(userMapper).insert(any(NormalUser.class));
     }
 
     @Test
     void testRegisterWithExistingUsername() {
-        when(userMapper.findByName("testUser")).thenReturn(normalUser);
+        // 创建测试用的UserDTO
+        UserDTO testDTO = new UserDTO();
+        testDTO.setName("testUser");
+        testDTO.setPassword("password123");
+        testDTO.setPhone("13800138000");
+        
+        when(userMapper.findByName("testUser")).thenReturn(testUser);
         
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.register(userDTO);
+            userService.register(testDTO);
         });
         
         assertEquals("用户名已存在", exception.getMessage());
@@ -113,7 +120,8 @@ public class UserServiceTest {
 
     @Test
     void testUpdateUser() throws Exception {
-        when(userMapper.findById(1)).thenReturn(normalUser);
+        // 设置mock行为
+        when(userMapper.findById(1)).thenReturn(testUser);  // 使用testUser而不是normalUser
         
         NormalUser updateInfo = new NormalUser();
         updateInfo.setName("updatedName");

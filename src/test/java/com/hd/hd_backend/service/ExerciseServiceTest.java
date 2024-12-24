@@ -43,7 +43,7 @@ public class ExerciseServiceTest {
         exerciseRecord.setExerciseRecordId(1);
         exerciseRecord.setExerciseId(1);
         exerciseRecord.setUserId(1);
-        exerciseRecord.setDuration("30");
+        exerciseRecord.setDuration("00:30:00");
     }
 
     @Test
@@ -70,11 +70,13 @@ public class ExerciseServiceTest {
         record.setExerciseId(1);
         record.setUserId(1);
         record.setDate("2024-01-01 10:00:00");
-        record.setDuration("30");
+        record.setDuration("00:30:00");
+        
+        when(exerciseItemMapper.getExerciseItemById(1)).thenReturn(exerciseItem);
         
         exerciseService.addExerciseRecord(record);
         
-        verify(exerciseRecordMapper).insert(any(ExerciseRecord.class));
+        verify(exerciseRecordMapper).addExerciseRecord(any(ExerciseRecord.class));
     }
 
     @Test
