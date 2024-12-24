@@ -12,7 +12,7 @@ public class FoodRecord {
     private int foodRecordId;
 
     @Schema(description = "记录时间")
-    private Date recordTime;
+    private String recordTime;
 
     @Schema(description = "用户ID")
     private int userId;
@@ -53,11 +53,11 @@ public class FoodRecord {
         this.foodRecordId = foodRecordId;
     }
 
-    public Date getRecordTime() {
+    public String getRecordTime() {
         return recordTime;
     }
 
-    public void setRecordTime(Date recordTime) {
+    public void setRecordTime(String recordTime) {
         this.recordTime = recordTime;
     }
 
