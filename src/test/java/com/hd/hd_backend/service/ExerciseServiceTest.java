@@ -66,11 +66,15 @@ public class ExerciseServiceTest {
 
     @Test
     void testAddExerciseRecord() throws Exception {
-        when(exerciseItemMapper.getExerciseItemById(1)).thenReturn(exerciseItem);
+        ExerciseRecord record = new ExerciseRecord();
+        record.setExerciseId(1);
+        record.setUserId(1);
+        record.setDate("2024-01-01 10:00:00");
+        record.setDuration("30");
         
-        exerciseService.addExerciseRecord(exerciseRecord);
+        exerciseService.addExerciseRecord(record);
         
-        verify(exerciseRecordMapper).addExerciseRecord(any(ExerciseRecord.class));
+        verify(exerciseRecordMapper).insert(any(ExerciseRecord.class));
     }
 
     @Test

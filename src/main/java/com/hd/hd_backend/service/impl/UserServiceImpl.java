@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         user.setAge(userDTO.getAge());
         user.setHeight(userDTO.getHeight());
         user.setPhone(userDTO.getPhone());
-        user.setIsblocked(0);  // 新用户��未被封禁
+        user.setIsblocked(0);  // 新用户未被封禁
         user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
         // 保存到数据库
         userMapper.insert(user);
@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getPassword() == null || userDTO.getPassword().trim().isEmpty()) {
             throw new Exception("密码不能为空");
         }
-
 
         // 通过手机号查找用户
         NormalUser user = userMapper.findByPhone(userDTO.getPhone());

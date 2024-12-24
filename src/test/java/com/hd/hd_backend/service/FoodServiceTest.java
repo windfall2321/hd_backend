@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class FoodServiceTest {
 
     @Autowired
@@ -48,7 +50,7 @@ public class FoodServiceTest {
     }
 
     @Test
-    void testGetAllFoodItems() {
+    void testGetAllFoodItems() throws Exception {
         List<FoodItem> foodItems = Arrays.asList(foodItem);
         when(foodMapper.findAll()).thenReturn(foodItems);
 
@@ -60,7 +62,7 @@ public class FoodServiceTest {
     }
 
     @Test
-    void testGetFoodItemByName() {
+    void testGetFoodItemByName() throws Exception {
         when(foodMapper.findByName("苹果")).thenReturn(foodItem);
 
         FoodItem result = foodService.getFoodItemByName("苹果");
@@ -70,7 +72,7 @@ public class FoodServiceTest {
     }
 
     @Test
-    void testAddFoodRecord() {
+    void testAddFoodRecord() throws Exception {
         when(foodMapper.findById(1)).thenReturn(foodItem);
         
         foodService.addFoodRecord(foodRecord);
@@ -79,7 +81,7 @@ public class FoodServiceTest {
     }
 
     @Test
-    void testGetFoodRecordsByUserId() {
+    void testGetFoodRecordsByUserId() throws Exception {
         List<FoodRecord> foodRecords = Arrays.asList(foodRecord);
         when(foodRecordMapper.findByUserId(1)).thenReturn(foodRecords);
 
@@ -88,5 +90,22 @@ public class FoodServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getFoodRecordId());
+    }
+
+    // 添加异常测试用例
+    @Test
+    void testAddFoodRecordWithInvalidFood() {
+        when(foodMapper.findById(1)).thenReturn(null);
+        
+        assertThrows(Exception.class, () -> {
+            foodService.addFoodRecord(foodRecord);
+        }, "应该抛出异常当食物不存在时");
+    }
+
+    @Test
+    void testAddFoodRecordWithNullRecord() {
+        assertThrows(Exception.class, () -> {
+            foodService.addFoodRecord(null);
+        }, "应该抛出异常当记录为空时");
     }
 } 

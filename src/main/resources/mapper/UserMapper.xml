@@ -10,9 +10,16 @@
         SELECT * FROM normal_user WHERE phone = #{phone}
     </select>
     
-    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser"  useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO normal_user (name, password, weight, age, height, phone, isblocked, profile_picture)
-        VALUES (#{name}, #{password}, #{weight}, #{age}, #{height}, #{phone}, #{isblocked}, #{profilePicture})
+    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO normal_user (
+            name, password, profile_picture, weight, 
+            age, height, gender, activity_factor, 
+            isblocked, phone
+        ) VALUES (
+            #{name}, #{password}, #{profilePicture}, #{weight},
+            #{age}, #{height}, #{gender}, #{activityFactor},
+            #{isblocked}, #{phone}
+        )
     </insert>
 
     <update id="blockById">

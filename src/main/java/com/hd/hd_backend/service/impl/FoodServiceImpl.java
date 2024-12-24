@@ -41,6 +41,17 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public void addFoodRecord(FoodRecord foodRecord) throws Exception {
+        // 检查记录是否为空
+        if (foodRecord == null) {
+            throw new Exception("食物记录不能为空");
+        }
+        
+        // 检查食物是否存在
+        FoodItem foodItem = foodMapper.findById(foodRecord.getFoodId());
+        if (foodItem == null) {
+            throw new Exception("食物不存在");
+        }
+        
         try {
             foodRecordMapper.insert(foodRecord);
         } catch (Exception e) {
