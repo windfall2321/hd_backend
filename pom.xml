@@ -136,7 +136,8 @@
                         @{argLine} -Dfile.encoding=UTF-8
                     </argLine>
                     <forkCount>1</forkCount>
-                    <reuseForks>true</reuseForks>
+                    <reuseForks>false</reuseForks>
+                    <threadCount>4</threadCount>
                 </configuration>
             </plugin>
 
