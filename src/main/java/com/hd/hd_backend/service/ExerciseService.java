@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service;
 
+import com.hd.hd_backend.dto.ExerciseRecordDTO;
 import com.hd.hd_backend.entity.ExerciseItem;
 import com.hd.hd_backend.entity.ExerciseRecord;
 
@@ -12,7 +13,7 @@ public interface ExerciseService {
 
     void addExerciseRecord(ExerciseRecord exerciseRecord)throws Exception;
 
-    List<ExerciseRecord> getUserExerciseRecord(int userId)throws Exception;
+    List<ExerciseRecordDTO> getUserExerciseRecord(int userId)throws Exception;
 
 
 

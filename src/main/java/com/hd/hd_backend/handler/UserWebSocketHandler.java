@@ -184,12 +184,14 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     if (parts.length > 1) {
                         try {
                             int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
-                            List<ExerciseRecord> exercises= exerciseService.getUserExerciseRecord(user_id);
+                            List<ExerciseRecordDTO> exercises= exerciseService.getUserExerciseRecord(user_id);
                             session.sendMessage(new TextMessage(JsonUtils.toJson(exercises)));
 
                         }
                         catch (Exception e) {
                             session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                            System.out.println(e.getMessage());
+
                         }
                     }
                     else {
