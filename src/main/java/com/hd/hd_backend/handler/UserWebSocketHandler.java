@@ -102,6 +102,27 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage("{\"error_code\":\"1\",\"error_message\":\"数据格式错误\"}"));
                 }
                 break;
+            case "updateUser":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+
+                try {
+                    // 直接使用NormalUser接收更新信息
+                    NormalUser updateInfo = objectMapper.readValue(parts[1], NormalUser.class);
+                    int userId = (Integer) session.getAttributes().get("userId");
+                    updateInfo.setUserId(userId); // 设置userId确保更新正确的用户
+
+                    userService.updateUser(userId, updateInfo);
+
+                    // 获取更新后的用户信息
+                    NormalUser updatedUser = userService.getUserById(userId);  // 使用service而不是直接访问mapper
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"用户信息更新成功\",\"data\":" + UserToJson(updatedUser) + "}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                }
+                break;
             case "getAllFood":
                 List<FoodItem> allFood = foodMapper.findAll();
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsString(allFood)));
