@@ -35,4 +35,37 @@
     <select id="findById" resultType="com.hd.hd_backend.entity.NormalUser">
         SELECT * FROM normal_user WHERE user_id = #{id}
     </select>
+
+    <select id="getFoodRecord" resultType="com.hd.hd_backend.dto.FoodRecordDTO">
+        SELECT 
+            fr.id,
+            fr.user_id,
+            fr.food_id,
+            fr.amount,
+            fr.record_time,
+            fi.food_name as foodName
+        FROM food_record fr
+        LEFT JOIN food_item fi ON fr.food_id = fi.id
+        WHERE fr.user_id = #{userId}
+    </select>
+
+    <select id="getAllFoodRecord" resultType="com.hd.hd_backend.dto.FoodRecordDTO">
+        SELECT 
+            fr.id as foodRecordId,
+            fr.record_time as recordTime,
+            fr.user_id as userId,
+            fr.food_id as foodId,
+            fr.food_weight as foodWeight,
+            fr.calories,
+            fr.fat,
+            fr.protein,
+            fr.carbohydrates,
+            fr.sodium,
+            fr.potassium,
+            fr.dietary_fiber as dietaryFiber,
+            fi.food_name as foodname
+        FROM food_record fr
+        LEFT JOIN food_item fi ON fr.food_id = fi.id
+        WHERE fr.user_id = #{userId}
+    </select>
 </mapper> 

@@ -185,7 +185,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         try {
                             int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
                             List<ExerciseRecord> exercises= exerciseService.getUserExerciseRecord(user_id);
-                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
+                            session.sendMessage(new TextMessage(JsonUtils.toJson(exercises)));
 
                         }
                         catch (Exception e) {
@@ -201,14 +201,15 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 if (parts.length > 1) {
                     int userId = Integer.parseInt(parts[1]);
                     try {
-                        List<FoodRecord> foodRecords = foodService.getFoodRecordsByUserId(userId);
+                        List<FoodRecordDTO> foodRecords = foodService.getFoodRecordsByUserId(userId);
                         if (foodRecords != null && !foodRecords.isEmpty()) {
-                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(foodRecords)));
+                            session.sendMessage(new TextMessage(JsonUtils.toJson(foodRecords)));
                         } else {
                             session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
                         }
                     } catch (Exception e) {
                         session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"获取食物记录失败\"}"));
+                        System.out.println(e.getMessage());
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
@@ -218,14 +219,15 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 if (parts.length > 1) {
                     int foodRecordId = Integer.parseInt(parts[1]);
                     try {
-                        FoodRecord foodRecord = foodService.getFoodRecordById(foodRecordId);
+                        FoodRecordDTO foodRecord = foodService.getFoodRecordById(foodRecordId);
                         if (foodRecord != null) {
-                            session.sendMessage(new TextMessage(foodRecord.foodRecordDetails()));
+                            session.sendMessage(new TextMessage(JsonUtils.toJson(foodRecord)));
                         } else {
                             session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
                         }
                     } catch (Exception e) {
                         session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"获取食物记录失败\"}"));
+                        System.out.println(e.getMessage());
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
