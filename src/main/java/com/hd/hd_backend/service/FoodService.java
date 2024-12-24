@@ -8,6 +8,10 @@ public interface FoodService {
     // FoodItem相关方法
     List<FoodItem> getAllFoodItems();
     FoodItem getFoodItemByName(String name);
+    FoodItem getFoodItemById(Integer foodId);
+    void addFoodItem(FoodItem foodItem) throws Exception;
+    void updateFoodItem(FoodItem foodItem) throws Exception;
+    void deleteFoodItem(Integer foodId) throws Exception;
     
     // FoodRecord相关方法
     List<FoodRecord> getFoodRecordsByUserId(int userId);

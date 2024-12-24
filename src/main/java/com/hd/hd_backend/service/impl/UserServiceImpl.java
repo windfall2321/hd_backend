@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         user.setAge(userDTO.getAge());
         user.setHeight(userDTO.getHeight());
         user.setPhone(userDTO.getPhone());
-        user.setIsblocked(0);  // 新用户默认未被封禁
+        user.setIsblocked(0);  // 新用户��未被封禁
         user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
         // 保存到数据库
         userMapper.insert(user);
@@ -66,6 +66,42 @@ public class UserServiceImpl implements UserService {
             throw new Exception("账号已被封禁");
         }
         
+        return user;
+    }
+
+    @Override
+    public void updateUser(Integer userId, NormalUser updateInfo) throws Exception {
+        NormalUser user = userMapper.findById(userId);
+        if (user == null) {
+            throw new Exception("用户不存在");
+        }
+        
+        // 如果要更新用户名，需要检查新用户名是否已存在
+        if (updateInfo.getName() != null && !updateInfo.getName().isEmpty()) {
+            NormalUser existingUser = userMapper.findByName(updateInfo.getName());
+            if (existingUser != null && !existingUser.getUserId().equals(userId)) {
+                throw new Exception("用户名已存在");
+            }
+        }
+        
+        // 如果要更新手机号，需要检查新手机号是否已存在
+        if (updateInfo.getPhone() != null && !updateInfo.getPhone().isEmpty()) {
+            NormalUser existingUser = userMapper.findByPhone(updateInfo.getPhone());
+            if (existingUser != null && !existingUser.getUserId().equals(userId)) {
+                throw new Exception("手机号已被使用");
+            }
+        }
+        
+        user.update(updateInfo);
+        userMapper.update(user);
+    }
+
+    @Override
+    public NormalUser getUserById(Integer userId) throws Exception {
+        NormalUser user = userMapper.findById(userId);
+        if (user == null) {
+            throw new Exception("用户不存在");
+        }
         return user;
     }
 } 
