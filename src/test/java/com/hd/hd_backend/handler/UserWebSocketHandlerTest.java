@@ -81,8 +81,13 @@ class UserWebSocketHandlerTest {
         
         verify(session).sendMessage(argThat(messageContains(
             "\"status\":200",
-            "\"message\":\"注册成功！\""
+            "\"message\":\"注册成功！用户为",
+            "\"userId\":1",
+            "\"name\":\"test\""
         )));
+        
+        verify(session).getAttributes();
+        verify(userService).register(any(UserDTO.class));
     }
 
     @Test
