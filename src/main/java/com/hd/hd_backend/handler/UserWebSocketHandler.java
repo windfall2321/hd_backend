@@ -23,6 +23,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private ExerciseService exerciseService;
     @Autowired
+    private FoodService foodService;
+    @Autowired
     private FoodMapper foodMapper;
     @Autowired
     private FoodRecordMapper foodRecordMapper;
@@ -138,6 +140,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     }
                 }
                 break;
+
             case "getAllExerciseItem":
                 if(!session.getAttributes().containsKey("userId"))
                 {
@@ -294,6 +297,50 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录ID\"}"));
+                }
+                break;
+            case "addFoodItem":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+
+                try {
+                    FoodItem newFoodItem = objectMapper.readValue(parts[1], FoodItem.class);
+                    foodService.addFoodItem(newFoodItem);
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物添加成功\"}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                }
+                break;
+
+            case "updateFoodItem":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+
+                try {
+                    FoodItem updateFoodItem = objectMapper.readValue(parts[1], FoodItem.class);
+                    foodService.updateFoodItem(updateFoodItem);
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物更新成功\"}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                }
+                break;
+
+            case "deleteFoodItem":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+
+                try {
+                    Integer foodId = Integer.parseInt(parts[1]);
+                    foodService.deleteFoodItem(foodId);
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物删除成功\"}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
                 }
                 break;
             default:
