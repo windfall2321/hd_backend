@@ -153,14 +153,65 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     }
                 }
                 break;
+
+            case "addExerciseRecord":
+                ExerciseRecord exerciseRecord = JsonUtils.fromJson(parts[1], ExerciseRecord.class);
+
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        try{
+                            int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                            exerciseRecord.setUserId(user_id);
+                            exerciseService.addExerciseRecord(exerciseRecord);
+                            session.sendMessage(new TextMessage("success"));
+
+                        }
+                        catch (Exception e){
+                            session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
+                        }
+
+                    }
+                }
+                break;
+
+            case "getUserExerciseRecord":
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"请先登录\"}"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        try {
+                            int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                            List<ExerciseRecord> exercises= exerciseService.getUserExerciseRecord(user_id);
+                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(exercises)));
+
+                        }
+                        catch (Exception e) {
+                            session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                        }
+                    }
+                    else {
+                        session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
+                    }
+                }
+                break;
             case "getAllFoodRecord":
                 if (parts.length > 1) {
-                    int userId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
-                    List<FoodRecord> foodRecords = foodRecordMapper.findByUserId(userId);
-                    if (foodRecords != null && !foodRecords.isEmpty()) {
-                        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(foodRecords)));
-                    } else {
-                        session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                    int userId = Integer.parseInt(parts[1]);
+                    try {
+                        List<FoodRecord> foodRecords = foodService.getFoodRecordsByUserId(userId);
+                        if (foodRecords != null && !foodRecords.isEmpty()) {
+                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(foodRecords)));
+                        } else {
+                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                        }
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"获取食物记录失败\"}"));
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
@@ -168,12 +219,16 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 break;
             case "getFoodRecord":
                 if (parts.length > 1) {
-                    int foodRecordId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
-                    FoodRecord foodRecord = foodRecordMapper.findById(foodRecordId);
-                    if (foodRecord != null) {
-                        session.sendMessage(new TextMessage(foodRecord.foodRecordDetails()));
-                    } else {
-                        session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                    int foodRecordId = Integer.parseInt(parts[1]);
+                    try {
+                        FoodRecord foodRecord = foodService.getFoodRecordById(foodRecordId);
+                        if (foodRecord != null) {
+                            session.sendMessage(new TextMessage(foodRecord.foodRecordDetails()));
+                        } else {
+                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                        }
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"获取食物记录失败\"}"));
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));

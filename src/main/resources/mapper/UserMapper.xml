@@ -1,17 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hd.hd_backend.mapper.UserMapper">
-    <select id="getUserById" resultType="com.hd.hd_backend.entity.NormalUser">
-        SELECT * FROM normal_user WHERE user_id = #{userId}
+    
+    <select id="findByName" resultType="com.hd.hd_backend.entity.NormalUser">
+        SELECT * FROM normal_user WHERE name = #{name}
     </select>
+    
+    <select id="findByPhone" resultType="com.hd.hd_backend.entity.NormalUser">
+        SELECT * FROM normal_user WHERE phone = #{phone}
+    </select>
+    
+    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser"  useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO normal_user (name, password, weight, age, height, phone, isblocked, profile_picture)
+        VALUES (#{name}, #{password}, #{weight}, #{age}, #{height}, #{phone}, #{isblocked}, #{profilePicture})
+    </insert>
 
-    <update id="updateUser">
-        UPDATE normal_user
-        SET name = #{user.name},
-            height = #{user.height},
-            weight = #{user.weight},
-            age = #{user.age},
-            gender = #{user.gender}
+    <update id="blockById">
+        UPDATE normal_user SET isblocked=1 WHERE user_id=#{id}
+    </update>
+
+    <update id="update" parameterType="com.hd.hd_backend.entity.NormalUser">
+        UPDATE normal_user 
+        SET 
+            name = #{name},
+            password = #{password},
+            profile_picture = #{profilePicture},
+            weight = #{weight},
+            age = #{age},
+            height = #{height},
+            phone = #{phone}
         WHERE user_id = #{userId}
     </update>
+
+    <select id="findById" resultType="com.hd.hd_backend.entity.NormalUser">
+        SELECT * FROM normal_user WHERE user_id = #{id}
+    </select>
+
+    <select id="getFoodRecord" resultType="com.hd.hd_backend.dto.FoodRecordDTO">
+        SELECT 
+            fr.id,
+            fr.user_id,
+            fr.food_id,
+            fr.amount,
+            fr.record_time,
+            fi.food_name as foodName
+        FROM food_record fr
+        LEFT JOIN food_item fi ON fr.food_id = fi.id
+        WHERE fr.user_id = #{userId}
+    </select>
+
+    <select id="getAllFoodRecord" resultType="com.hd.hd_backend.dto.FoodRecordDTO">
+        SELECT 
+            fr.id as foodRecordId,
+            fr.record_time as recordTime,
+            fr.user_id as userId,
+            fr.food_id as foodId,
+            fr.food_weight as foodWeight,
+            fr.calories,
+            fr.fat,
+            fr.protein,
+            fr.carbohydrates,
+            fr.sodium,
+            fr.potassium,
+            fr.dietary_fiber as dietaryFiber,
+            fi.food_name as foodname
+        FROM food_record fr
+        LEFT JOIN food_item fi ON fr.food_id = fi.id
+        WHERE fr.user_id = #{userId}
+    </select>
 </mapper> 

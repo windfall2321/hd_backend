@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service.impl;
 
+import com.hd.hd_backend.dto.FoodRecordDTO;
 import com.hd.hd_backend.entity.FoodItem;
 import com.hd.hd_backend.entity.FoodRecord;
 import com.hd.hd_backend.mapper.FoodMapper;
@@ -30,12 +31,12 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public List<FoodRecord> getFoodRecordsByUserId(int userId) {
+    public List<FoodRecordDTO> getFoodRecordsByUserId(int userId) {
         return foodRecordMapper.findByUserId(userId);
     }
 
     @Override
-    public FoodRecord getFoodRecordById(int foodRecordId) {
+    public FoodRecordDTO getFoodRecordById(int foodRecordId) {
         return foodRecordMapper.findById(foodRecordId);
     }
 

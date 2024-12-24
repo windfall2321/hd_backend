@@ -1,6 +1,7 @@
 package com.hd.hd_backend.mapper;
 
 import com.hd.hd_backend.entity.NormalUser;
+import com.hd.hd_backend.dto.FoodRecordDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,4 +14,5 @@ public interface UserMapper {
     void insert(NormalUser user);
     void blockById (@Param("id") int id);
     void update(NormalUser user);
+
 } 

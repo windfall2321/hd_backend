@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service.impl;
 
+import com.hd.hd_backend.dto.ExerciseRecordDTO;
 import com.hd.hd_backend.entity.ExerciseItem;
 import com.hd.hd_backend.entity.ExerciseRecord;
 import com.hd.hd_backend.mapper.ExerciseItemMapper;
@@ -43,7 +44,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public  List<ExerciseRecord>  getUserExerciseRecord(int userId)throws Exception
+    public  List<ExerciseRecordDTO>  getUserExerciseRecord(int userId)throws Exception
     {
         return exerciseRecordMapper.getExerciseRecordsByUserId(userId);
     }
