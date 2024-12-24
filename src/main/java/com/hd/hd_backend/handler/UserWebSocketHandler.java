@@ -306,7 +306,23 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
                 }
                 break;
+                case "getFoodItemById":
+                    if (!session.getAttributes().containsKey("userId")) {
+                        session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                        break;
+                    }
 
+                    try {
+                        FoodItem newFoodItem = objectMapper.readValue(parts[1], FoodItem.class);
+
+                        FoodItem FoodItem = foodService.getFoodItemById(newFoodItem.getFoodid());
+
+                        session.sendMessage(new TextMessage(JsonUtils.toJson(FoodItem)));
+
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                    }
+                    break;
             case "updateFoodItem":
                 if (!session.getAttributes().containsKey("userId")) {
                     session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
