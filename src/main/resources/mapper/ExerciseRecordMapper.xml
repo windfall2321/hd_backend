@@ -22,17 +22,24 @@
         WHERE exercise_record_id = #{id}
     </delete>
 
-    <select id="getExerciseRecord" parameterType="int" resultType="com.hd.hd_backend.entity.ExerciseRecord">
-        SELECT * FROM exercise_record
+    <select id="getExerciseRecord" parameterType="int" resultType="com.hd.hd_backend.dto.ExerciseRecordDTO">
+        SELECT exercise_record_id,date,duration,burned_caloris,user_id,ei.exercise_id as exercise_id,name as exercise_name
+        FROM exercise_record ec
+        LEFT JOIN exercise_item ei ON  ec.exercise_id=ei.exercise_id
         WHERE exercise_record_id = #{id}
     </select>
 
-    <select id="getExerciseRecords" resultType="com.hd.hd_backend.entity.ExerciseRecord">
-        SELECT * FROM exercise_record
+    <select id="getExerciseRecords" resultType="com.hd.hd_backend.dto.ExerciseRecordDTO">
+        SELECT exercise_record_id,date,duration,burned_caloris,user_id,ei.exercise_id as exercise_id,name as exercise_name
+        FROM exercise_record ec
+        LEFT JOIN exercise_item ei ON  ec.exercise_id=ei.exercise_id
     </select>
 
-    <select id="getExerciseRecordsByUserId" resultType="com.hd.hd_backend.entity.ExerciseRecord">
-        SELECT * FROM exercise_record WHERE user_id=#{user_id}
+    <select id="getExerciseRecordsByUserId" resultType="com.hd.hd_backend.dto.ExerciseRecordDTO">
+        SELECT exercise_record_id,date,duration,burned_caloris,user_id,ei.exercise_id as exercise_id,name as exercise_name
+        FROM exercise_record ec
+        LEFT JOIN exercise_item ei ON  ec.exercise_id=ei.exercise_id
+        WHERE user_id=#{user_id}
     </select>
 
 </mapper>
