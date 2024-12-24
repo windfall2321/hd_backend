@@ -24,12 +24,10 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private ExerciseService exerciseService;
     @Autowired
     private FoodService foodService;
-    @Autowired
-    private FoodRecordMapper foodRecordMapper;
     // 错误映射
     private static final Map<String, String> errorMapping = new HashMap<>();
     static {
-        errorMapping.put("手机号不能为空", "{\"error_code\":400,\"error_message\":\"手机号不能为空\"}");
+        errorMapping.put("手机号不能为空", "{\"error_code\":400,\"error_message\":\"手机号���能为空\"}");
         errorMapping.put("密码不能为空", "{\"error_code\":400,\"error_message\":\"密码不能为空\"}");
         errorMapping.put("用户不存在", "{\"error_code\":404,\"error_message\":\"用户不存在\"}");
         errorMapping.put("密码错误", "{\"error_code\":401,\"error_message\":\"密码错误\"}");
@@ -201,12 +199,16 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 break;
             case "getAllFoodRecord":
                 if (parts.length > 1) {
-                    int userId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
-                    List<FoodRecord> foodRecords = foodRecordMapper.findByUserId(userId);
-                    if (foodRecords != null && !foodRecords.isEmpty()) {
-                        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(foodRecords)));
-                    } else {
-                        session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                    int userId = Integer.parseInt(parts[1]);
+                    try {
+                        List<FoodRecord> foodRecords = foodService.getFoodRecordsByUserId(userId);
+                        if (foodRecords != null && !foodRecords.isEmpty()) {
+                            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(foodRecords)));
+                        } else {
+                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                        }
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"获取食物记录失败\"}"));
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
@@ -214,12 +216,16 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 break;
             case "getFoodRecord":
                 if (parts.length > 1) {
-                    int foodRecordId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
-                    FoodRecord foodRecord = foodRecordMapper.findById(foodRecordId);
-                    if (foodRecord != null) {
-                        session.sendMessage(new TextMessage(foodRecord.foodRecordDetails()));
-                    } else {
-                        session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                    int foodRecordId = Integer.parseInt(parts[1]);
+                    try {
+                        FoodRecord foodRecord = foodService.getFoodRecordById(foodRecordId);
+                        if (foodRecord != null) {
+                            session.sendMessage(new TextMessage(foodRecord.foodRecordDetails()));
+                        } else {
+                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
+                        }
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"获取食物记录失败\"}"));
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少参数\"}"));
@@ -228,12 +234,12 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "addFoodRecord":
                 if (parts.length > 1) {
                     try {
-                        System.out.println("Received data: " + parts[1]);  // 打印收到的食物记录数据
-                        FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);  // 从消息中解析 FoodRecord 对象
-                        foodRecordMapper.insert(foodRecord);  // 将 FoodRecord 插入到数据库
+                        System.out.println("Received data: " + parts[1]);
+                        FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);
+                        foodService.addFoodRecord(foodRecord);
                         session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录添加成功\"}"));
                     } catch (Exception e) {
-                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"添加食物记录失败\"}"));
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录数据\"}"));
@@ -242,15 +248,11 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "updateFoodRecord":
                 if (parts.length > 1) {
                     try {
-                        FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);  // 从消息中解析 FoodRecord 对象
-                        int updatedRows = foodRecordMapper.update(foodRecord);  // 更新记录
-                        if (updatedRows > 0) {
-                            session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录更新成功\"}"));
-                        } else {
-                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
-                        }
+                        FoodRecord foodRecord = objectMapper.readValue(parts[1], FoodRecord.class);
+                        foodService.updateFoodRecord(foodRecord);
+                        session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录更新成功\"}"));
                     } catch (Exception e) {
-                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"更新食物记录失败\"}"));
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
                     }
                 } else {
                     session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录数据\"}"));
@@ -259,18 +261,79 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "deleteFoodRecord":
                 if (parts.length > 1) {
                     try {
-                        int foodRecordId = Integer.parseInt(parts[1]);  // 解析出 foodRecordId
-                        int deletedRows = foodRecordMapper.delete(foodRecordId);  // 删除记录
-                        if (deletedRows > 0) {
-                            session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录删除成功\"}"));
-                        } else {
-                            session.sendMessage(new TextMessage("{\"error_code\":404,\"error_message\":\"未找到食物记录\"}"));
-                        }
+                        int foodRecordId = Integer.parseInt(parts[1]);
+                        foodService.deleteFoodRecord(foodRecordId);
+                        session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物记录删除成功\"}"));
                     } catch (Exception e) {
-                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"删除食物记录失败\"}"));
+                        session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
                     }
                 } else {
-                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记���ID\"}"));
+                    session.sendMessage(new TextMessage("{\"error_code\":400,\"error_message\":\"缺少食物记录ID\"}"));
+                }
+                break;
+            case "updateUser":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+                
+                try {
+                    // 直接使用NormalUser接收更新信息
+                    NormalUser updateInfo = objectMapper.readValue(parts[1], NormalUser.class);
+                    int userId = (Integer) session.getAttributes().get("userId");
+                    updateInfo.setUserId(userId); // 设置userId确保更新正确的用户
+                    
+                    userService.updateUser(userId, updateInfo);
+                    
+                    // 获取更新后的用户信息
+                    NormalUser updatedUser = userService.getUserById(userId);  // 使用service而不是直接访问mapper
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"用户信息更新成功\",\"data\":" + UserToJson(updatedUser) + "}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                }
+                break;
+            case "addFoodItem":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+                
+                try {
+                    FoodItem newFoodItem = objectMapper.readValue(parts[1], FoodItem.class);
+                    foodService.addFoodItem(newFoodItem);
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物添加成功\"}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                }
+                break;
+
+            case "updateFoodItem":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+                
+                try {
+                    FoodItem updateFoodItem = objectMapper.readValue(parts[1], FoodItem.class);
+                    foodService.updateFoodItem(updateFoodItem);
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物更新成功\"}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
+                }
+                break;
+
+            case "deleteFoodItem":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                    break;
+                }
+                
+                try {
+                    Integer foodId = Integer.parseInt(parts[1]);
+                    foodService.deleteFoodItem(foodId);
+                    session.sendMessage(new TextMessage("{\"status\":200,\"message\":\"食物删除成功\"}"));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage("{\"error_code\":500,\"error_message\":\"" + e.getMessage() + "\"}"));
                 }
                 break;
             default:

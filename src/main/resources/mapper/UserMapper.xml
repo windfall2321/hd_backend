@@ -18,4 +18,21 @@
     <update id="blockById">
         UPDATE normal_user SET isblocked=1 WHERE user_id=#{id}
     </update>
+
+    <update id="update" parameterType="com.hd.hd_backend.entity.NormalUser">
+        UPDATE normal_user 
+        SET 
+            name = #{name},
+            password = #{password},
+            profile_picture = #{profilePicture},
+            weight = #{weight},
+            age = #{age},
+            height = #{height},
+            phone = #{phone}
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="findById" resultType="com.hd.hd_backend.entity.NormalUser">
+        SELECT * FROM normal_user WHERE user_id = #{id}
+    </select>
 </mapper> 

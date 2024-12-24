@@ -7,4 +7,6 @@ public interface UserService {
 
     NormalUser register(UserDTO userDTO) throws Exception;
     NormalUser login(UserDTO userDTO) throws Exception;
+    void updateUser(Integer userId, NormalUser updateInfo) throws Exception;
+    NormalUser getUserById(Integer userId) throws Exception;
 } 

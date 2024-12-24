@@ -212,4 +212,34 @@ public void setUserId(Integer userId) {
         // 添加运动记录
     }
 
+    public void update(NormalUser updateInfo) {
+        if (updateInfo.getName() != null && !updateInfo.getName().isEmpty()) {
+            this.name = updateInfo.getName();
+        }
+        if (updateInfo.getPassword() != null && !updateInfo.getPassword().isEmpty()) {
+            this.password = updateInfo.getPassword();
+        }
+        if (updateInfo.getProfilePicture() != null && !updateInfo.getProfilePicture().isEmpty()) {
+            this.profilePicture = updateInfo.getProfilePicture();
+        }
+        if (updateInfo.getWeight() != null) {
+            this.weight = updateInfo.getWeight();
+        }
+        if (updateInfo.getAge() != null) {
+            this.age = updateInfo.getAge();
+        }
+        if (updateInfo.getHeight() != null) {
+            this.height = updateInfo.getHeight();
+        }
+        if (updateInfo.getPhone() != null && !updateInfo.getPhone().isEmpty()) {
+            this.phone = updateInfo.getPhone();
+        }
+        if (updateInfo.getGender() != null) {
+            this.gender = updateInfo.getGender();
+        }
+        if (updateInfo.getActivityFactor() != null) {
+            this.activity_factor = updateInfo.getActivityFactor();
+        }
+    }
+
 } 
