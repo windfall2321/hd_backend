@@ -153,6 +153,54 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     }
                 }
                 break;
+            case "addExerciseRecord":
+                ExerciseRecord exerciseRecord = JsonUtils.fromJson(parts[1], ExerciseRecord.class);
+
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        try{
+                            int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                            exerciseRecord.setUserId(user_id);
+                            exerciseService.addExerciseRecord(exerciseRecord);
+                            session.sendMessage(new TextMessage("success"));
+
+                        }
+                        catch (Exception e){
+                            session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
+                        }
+
+                    }
+                }
+                break;
+
+            case "getUserExerciseRecord":
+                if(!session.getAttributes().containsKey("userId"))
+                {
+                    session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"请先登录\"}"));
+                }
+                else{
+                    if (parts.length > 1) {
+                        try {
+                            int user_id= Integer.parseInt(session.getAttributes().get("userId").toString());
+                            List<ExerciseRecordDTO> exercises= exerciseService.getUserExerciseRecord(user_id);
+                            session.sendMessage(new TextMessage(JsonUtils.toJson(exercises)));
+
+                        }
+                        catch (Exception e) {
+                            session.sendMessage(new TextMessage("{\"error_code\":\"405\",\"error_message\":\"用户未登录\"}"));
+                            System.out.println(e.getMessage());
+
+                        }
+                    }
+                    else {
+                        session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"获取失败\"}"));
+                    }
+                }
+                break;
             case "getAllFoodRecord":
                 if (parts.length > 1) {
                     int userId = Integer.parseInt(parts[1]);  // 假设传递的是 user_id
