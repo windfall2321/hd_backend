@@ -38,6 +38,15 @@ public class FoodItem {
     @Schema(description = "钠")
     private Double sodium;
 
+    public FoodItem() {
+    }
+
+    public FoodItem(int foodId, String name, int calories) {
+        this.foodid = foodId;
+        this.name = name;
+        this.calories = calories;
+    }
+
     public void setFoodid(Integer id) {
         this.foodid = id;
     }
