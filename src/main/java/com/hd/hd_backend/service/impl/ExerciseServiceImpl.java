@@ -48,4 +48,9 @@ public class ExerciseServiceImpl implements ExerciseService {
     {
         return exerciseRecordMapper.getExerciseRecordsByUserId(userId);
     }
+
+    @Override
+    public void deleteExerciseRecord(int exerciseRecordId) throws Exception {
+        exerciseRecordMapper.deleteExerciseRecord(exerciseRecordId);
+    }
 }

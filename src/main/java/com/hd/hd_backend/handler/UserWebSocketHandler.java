@@ -338,6 +338,22 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
                 }
                 break;
+            case "deleteExerciseRecord":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.EXERCISE_RECORD_DELETE_FAIL.ordinal(), "用户未登录","error_message")) );
+
+                    break;
+                }
+
+                try {
+                    int recordId = Integer.parseInt(parts[1]);
+                    exerciseService.deleteExerciseRecord(recordId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.EXERCISE_RECORD_DELETE_SUCCESS.ordinal(),  "运动记录删除成功","message")) );
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.EXERCISE_RECORD_DELETE_FAIL.ordinal(), e.getMessage(),"error_message")) );
+
+                }
+                break;
             default:
                 session.sendMessage(new TextMessage("未知操作"));
         }

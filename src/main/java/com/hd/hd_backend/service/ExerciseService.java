@@ -15,6 +15,6 @@ public interface ExerciseService {
 
     List<ExerciseRecordDTO> getUserExerciseRecord(int userId)throws Exception;
 
-
+    void deleteExerciseRecord(int exerciseRecordId)throws Exception;
 
 }
