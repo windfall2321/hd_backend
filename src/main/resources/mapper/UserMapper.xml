@@ -26,12 +26,12 @@
     </insert>
 
     <insert id="insertNormalUser" parameterType="com.hd.hd_backend.entity.NormalUser" >
-        INSERT INTO normal_user (user_id, weight, age, height,  isblocked, activity_factor, gender)
-        VALUES (#{id}, #{weight}, #{age}, #{height}, #{isBlocked}, #{activityFactor}, #{gender})
+        INSERT INTO normal_user (user_id, weight, age, height,  activity_factor, gender)
+        VALUES (#{id}, #{weight}, #{age}, #{height},  #{activityFactor}, #{gender})
     </insert>
 
     <update id="blockById">
-        UPDATE normal_user SET isblocked=1 WHERE user_id=#{id}
+        UPDATE normal_user SET is_blocked=1 WHERE user_id=#{id}
     </update>
 
     <update id="update" parameterType="com.hd.hd_backend.entity.NormalUser">

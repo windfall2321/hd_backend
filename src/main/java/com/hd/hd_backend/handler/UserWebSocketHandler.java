@@ -80,7 +80,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         session.getAttributes().put("userId", user.getId());
                         System.out.println(user.getId()); // 输出
                     }catch (Exception e) {
-//                        e.printStackTrace();
+                       e.printStackTrace();
                         // 根据异常消息返回相应的错误码和错误信息
                         session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.LOGIN_FAIL.ordinal(),e.getMessage(),"error_message")));
                     }

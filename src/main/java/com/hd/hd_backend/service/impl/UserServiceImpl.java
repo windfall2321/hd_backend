@@ -70,9 +70,9 @@ public class UserServiceImpl implements UserService {
         {
             NormalUser normal=userMapper.findById(user.getId());
             // 检查账号状态
-            if (normal.getIsBlocked() == 1) {
-                throw new Exception("账号已被封禁");
-            }
+//            if (normal.getIsBlocked() == 1) {
+//                throw new Exception("账号已被封禁");
+//            }
 
             return normal;
 
