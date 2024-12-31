@@ -1,6 +1,6 @@
 package com.hd.hd_backend.utils;
 
-public enum Code {
+public enum WebSocketCode {
     REGISTER_SUCCESS,
     REGISTER_FAIL,
 
@@ -59,5 +59,14 @@ public enum Code {
     POST_UPDATE_SUCCESS,
     POST_UPDATE_FAIL,
     POST_GET_SUCCESS,
-    POST_GET_FAIL
+    POST_GET_FAIL,
+
+    COMMENT_CREATE_SUCCESS,
+    COMMENT_CREATE_FAIL,
+    COMMENT_DELETE_SUCCESS,
+    COMMENT_DELETE_FAIL,
+    COMMENT_UPDATE_SUCCESS,
+    COMMENT_UPDATE_FAIL,
+    COMMENT_GET_SUCCESS,
+    COMMENT_GET_FAIL
 }

@@ -2,39 +2,31 @@ package com.hd.hd_backend.entity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
-public class Post {
-    private Integer postId;
-    private String title;
+public class Comment {
+    private Integer commentId;
     private Integer userId;
+    private Integer postId;
     private String content;
-    private String tags;
-    private String  timestamp;
+    private String timestamp;
     private Integer isOffending;
-    public Post() {
+
+    public Comment() {
         LocalDateTime now = LocalDateTime.now();
         // 格式化为 MySQL 的 DATETIME 格式
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String time  = now.format(formatter);
+        String time = now.format(formatter);
         this.timestamp = time;
         this.isOffending = 0;
     }
+
     // Getters and Setters
-    public Integer getPostId() {
-        return postId;
+    public Integer getCommentId() {
+        return commentId;
     }
 
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCommentId(Integer commentId) {
+        this.commentId = commentId;
     }
 
     public Integer getUserId() {
@@ -45,20 +37,20 @@ public class Post {
         this.userId = userId;
     }
 
+    public Integer getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Integer postId) {
+        this.postId = postId;
+    }
+
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
     }
 
     public String getTimestamp() {
