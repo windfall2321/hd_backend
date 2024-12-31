@@ -1,47 +1,31 @@
 package com.hd.hd_backend.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hd.hd_backend.utils.JsonUtils;
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.Date;
 
-@Schema(description = "食物记录")
 public class FoodRecord {
 
-    @Schema(description = "食物记录ID")
     private int foodRecordId;
 
-    @Schema(description = "记录时间")
     private String recordTime;
 
-    @Schema(description = "用户ID")
     private int userId;
 
-    @Schema(description = "食物ID")
     private int foodId;
 
-    @Schema(description = "食物重量")
     private double foodWeight;
 
-    @Schema(description = "热量")
     private int calories;
 
-    @Schema(description = "脂肪")
     private double fat;
 
-    @Schema(description = "蛋白质")
     private double protein;
 
-    @Schema(description = "碳水化合物")
     private double carbohydrates;
 
-    @Schema(description = "钠")
     private double sodium;
 
-    @Schema(description = "钾")
     private double potassium;
 
-    @Schema(description = "膳食纤维")
     private double dietaryFiber;
 
     // Getters and Setters

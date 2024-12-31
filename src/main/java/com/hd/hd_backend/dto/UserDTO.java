@@ -1,32 +1,24 @@
 package com.hd.hd_backend.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+
+
 import java.util.Date;
 
-@Schema(description = "用户注册登录DTO")
 public class UserDTO {
-    @Schema(description = "用户名")
     private String name;
     
-    @Schema(description = "密码")
     private String password;
     
-    @Schema(description = "体重(kg)")
     private Integer weight;
     
-    @Schema(description = "年龄")
     private Integer age;
     
-    @Schema(description = "身高(cm)")
     private Integer height;
     
-    @Schema(description = "手机号")
     private String phone;
     
-    @Schema(description = "是否为登录请求")
     private boolean isLogin;
 
-    @Schema(description = "是否为登录请求")
     private Date loginTime;
 
     public String getName() {

@@ -3,7 +3,6 @@ package com.hd.hd_backend.mapper;
 import com.hd.hd_backend.dto.FoodRecordDTO;
 import com.hd.hd_backend.entity.FoodRecord;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 @Mapper

@@ -2,6 +2,7 @@ package com.hd.hd_backend.service.impl;
 
 import com.hd.hd_backend.dto.UserDTO;
 import com.hd.hd_backend.entity.NormalUser;
+import com.hd.hd_backend.entity.User;
 import com.hd.hd_backend.mapper.UserMapper;
 import com.hd.hd_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public NormalUser register(UserDTO userDTO) throws Exception {
         // 检查用户名是否已存在
-        if (userMapper.findByName(userDTO.getName()) != null) {
-            throw new Exception("用户名已存在");
-        }
+//        if (userMapper.findByName(userDTO.getName()) != null) {
+//            throw new Exception("用户名已存在");
+//        }
 
         // 数据验证
        
@@ -31,16 +32,18 @@ public class UserServiceImpl implements UserService {
         user.setAge(userDTO.getAge());
         user.setHeight(userDTO.getHeight());
         user.setPhone(userDTO.getPhone());
-        user.setIsblocked(0);  // 新用户未被封禁
+        user.setIsBlocked(0);  // 新用户��未被封禁
         user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
         // 保存到数据库
-        userMapper.insert(user);
-        NormalUser normalUser =userMapper.findByPhone(userDTO.getPhone());
-        return normalUser;
+        userMapper.insertUser(user);
+        int id=userMapper.findByPhone(user.getPhone()).getId();
+        user.setId(id);
+        userMapper.insertNormalUser(user);
+        return userMapper.findById(id);
     }
 
     @Override
-    public NormalUser login(UserDTO userDTO) throws Exception {
+    public User login(UserDTO userDTO) throws Exception {
         // 验证参数
         if (userDTO.getPhone() == null || userDTO.getPhone().trim().isEmpty()) {
             throw new Exception("手机号不能为空");
@@ -49,23 +52,35 @@ public class UserServiceImpl implements UserService {
             throw new Exception("密码不能为空");
         }
 
+
         // 通过手机号查找用户
-        NormalUser user = userMapper.findByPhone(userDTO.getPhone());
+        User user = userMapper.findByPhone(userDTO.getPhone());
         if (user == null) {
             throw new Exception("用户不存在");
         }
-        
+
         // 验证密码
         if (!user.getPassword().equals(userDTO.getPassword())) {
             throw new Exception("密码错误");
         }
-        
-        // 检查账号状态
-        if (user.getIsblocked() == 1) {
-            throw new Exception("账号已被封禁");
+
+        if (user.getIsAdmin() == 0)
+        {
+            NormalUser normalUser=userMapper.findById(user.getId());
+            // 检查账号状态
+            if (normalUser.getIsBlocked() == 1) {
+                throw new Exception("账号已被封禁");
+            }
+
+            return normalUser;
+
         }
-        
-        return user;
+        else
+        {
+            return user;
+        }
+
+
     }
 
     @Override
@@ -76,17 +91,17 @@ public class UserServiceImpl implements UserService {
         }
         
         // 如果要更新用户名，需要检查新用户名是否已存在
-        if (updateInfo.getName() != null && !updateInfo.getName().isEmpty()) {
-            NormalUser existingUser = userMapper.findByName(updateInfo.getName());
-            if (existingUser != null && !existingUser.getUserId().equals(userId)) {
+        if (!(updateInfo.getName().equals(user.getName())) && !updateInfo.getName().isEmpty()) {
+            User existingUser = userMapper.findByPhone(updateInfo.getName());
+            if (existingUser != null && !existingUser.getId().equals(userId)) {
                 throw new Exception("用户名已存在");
             }
         }
-        
+
         // 如果要更新手机号，需要检查新手机号是否已存在
         if (updateInfo.getPhone() != null && !updateInfo.getPhone().isEmpty()) {
-            NormalUser existingUser = userMapper.findByPhone(updateInfo.getPhone());
-            if (existingUser != null && !existingUser.getUserId().equals(userId)) {
+            User existingUser = userMapper.findByPhone(updateInfo.getPhone());
+            if (existingUser != null && !existingUser.getId().equals(userId)) {
                 throw new Exception("手机号已被使用");
             }
         }

@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hd.hd_backend.mapper.UserMapper">
-    
-    <select id="findByName" resultType="com.hd.hd_backend.entity.NormalUser">
-        SELECT * FROM normal_user WHERE name = #{name}
+
+    <select id="findByName" resultType="com.hd.hd_backend.entity.User">
+        SELECT *
+        FROM user
+        WHERE name=#{name}
     </select>
     
-    <select id="findByPhone" resultType="com.hd.hd_backend.entity.NormalUser">
-        SELECT * FROM normal_user WHERE phone = #{phone}
+    <select id="findByPhone" resultType="com.hd.hd_backend.entity.User">
+        SELECT *
+        FROM user
+        WHERE phone=#{phone}
     </select>
-    
-    <insert id="insert" parameterType="com.hd.hd_backend.entity.NormalUser"  useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO normal_user (name, password, weight, age, height, phone, isblocked, profile_picture)
-        VALUES (#{name}, #{password}, #{weight}, #{age}, #{height}, #{phone}, #{isblocked}, #{profilePicture})
+    <select id="findById" resultType="com.hd.hd_backend.entity.NormalUser">
+        SELECT *
+        FROM normal_user nu
+                 LEFT JOIN user u ON u.id=nu.user_id
+        WHERE user_id = #{id}
+    </select>
+
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO user (name, password,phone, is_admin, profile_picture)
+        VALUES (#{name}, #{password}, #{phone}, #{isAdmin}, #{profilePicture})
+    </insert>
+
+    <insert id="insertNormalUser" parameterType="com.hd.hd_backend.entity.NormalUser" >
+        INSERT INTO normal_user (user_id, weight, age, height,  isblocked, activity_factor, gender)
+        VALUES (#{id}, #{weight}, #{age}, #{height}, #{isBlocked}, #{activityFactor}, #{gender})
     </insert>
 
     <update id="blockById">
@@ -20,7 +35,8 @@
     </update>
 
     <update id="update" parameterType="com.hd.hd_backend.entity.NormalUser">
-        UPDATE normal_user 
+        UPDATE normal_user nu
+            LEFT JOIN user u ON u.id=nu.user_id
         SET 
             name = #{name},
             password = #{password},
@@ -29,12 +45,11 @@
             age = #{age},
             height = #{height},
             phone = #{phone}
-        WHERE user_id = #{userId}
+        WHERE nu.user_id = #{id};
+
     </update>
 
-    <select id="findById" resultType="com.hd.hd_backend.entity.NormalUser">
-        SELECT * FROM normal_user WHERE user_id = #{id}
-    </select>
+
 
     <select id="getFoodRecord" resultType="com.hd.hd_backend.dto.FoodRecordDTO">
         SELECT 

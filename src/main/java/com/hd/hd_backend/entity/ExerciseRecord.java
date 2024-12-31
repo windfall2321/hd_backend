@@ -1,7 +1,5 @@
 package com.hd.hd_backend.entity;
 
-import java.sql.Date;
-
 public class ExerciseRecord {
     private int exerciseRecordId;
     private int exerciseId;

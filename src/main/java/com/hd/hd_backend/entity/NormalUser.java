@@ -1,80 +1,24 @@
 package com.hd.hd_backend.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.util.ArrayList;
 import java.util.List;
 
-@Schema(description = "普通用户实体")
-public class NormalUser {
+public class NormalUser extends User {
 
-
-
-    @Schema(description = "用户ID")
-    private Integer userId;
-    
-    @Schema(description = "用户名")
-    private String name;
-    
-    @Schema(description = "密码")
-    private String password;
-    
-    @Schema(description = "头像URL")
-    private String profilePicture;
-    
-    @Schema(description = "体重(kg)")
     private Integer weight;
-    
-    @Schema(description = "年龄")
     private Integer age;
-    
-    @Schema(description = "身高(cm)")
+
     private Integer height;
 
-    @Schema(description = "性别")
     private Integer gender;
 
-    @Schema(description = "活动因子")
-    private Integer activity_factor;
-    
-    @Schema(description = "是否被封禁(0:否 1:是)")
-    private Integer isblocked;
-    
-    @Schema(description = "手机号")
+    private Double activityFactor;
+
+    private Integer isBlocked;
+
     private String phone;
 
     // Getters and Setters
 
-
-    public Integer getUserId() {
-        return userId;
-    }
-public void setUserId(Integer userId) {
-        this.userId = userId;
-}
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
 
     public Integer getWeight() {
         return weight;
@@ -92,20 +36,6 @@ public void setUserId(Integer userId) {
         this.age = age;
     }
 
-    public Integer getGender() {return gender;}
-
-    public void setGender(Integer gender) {
-        this.gender = gender;
-    }
-
-    public Integer getActivityFactor() {
-        return activity_factor;
-    }
-
-    public void setActivityFactor(Integer activity_factor) {
-        this.activity_factor =activity_factor;
-    }
-
     public Integer getHeight() {
         return height;
     }
@@ -114,12 +44,30 @@ public void setUserId(Integer userId) {
         this.height = height;
     }
 
-    public Integer getIsblocked() {
-        return isblocked;
+
+
+    public Integer getGender() {return gender;}
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 
-    public void setIsblocked(Integer isblocked) {
-        this.isblocked = isblocked;
+    public Double getActivityFactor() {
+        return activityFactor;
+    }
+
+    public void setActivityFactor(Double activityFactor) {
+        this.activityFactor =activityFactor;
+    }
+
+
+
+    public Integer getIsBlocked() {
+        return isBlocked;
+    }
+
+    public void setIsBlocked(Integer isBlocked) {
+        this.isBlocked = isBlocked;
     }
 
     public String getPhone() {
@@ -135,7 +83,7 @@ public void setUserId(Integer userId) {
     }
     
     public void register() {
-        this.isblocked = 0;
+        this.isBlocked = 0;
         // 注册逻辑
     }
     
@@ -238,7 +186,7 @@ public void setUserId(Integer userId) {
             this.gender = updateInfo.getGender();
         }
         if (updateInfo.getActivityFactor() != null) {
-            this.activity_factor = updateInfo.getActivityFactor();
+            this.activityFactor = updateInfo.getActivityFactor();
         }
     }
 

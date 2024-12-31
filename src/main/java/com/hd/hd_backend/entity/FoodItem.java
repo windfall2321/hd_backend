@@ -1,51 +1,30 @@
 package com.hd.hd_backend.entity;
 
 import com.hd.hd_backend.utils.JsonUtils;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 
 
-@Schema(description = "食物项")
 public class FoodItem {
     // getters and setters
-    @Schema(description = "食物ID")
     private Integer foodid;
     
-    @Schema(description = "食物名称")
     private String name;
 
-    @Schema(description = "食物类型")
     private String type;
     
-    @Schema(description = "卡路里")
     private Integer calories;
 
-    @Schema(description = "脂肪")
     private Double fat;
 
-    @Schema(description = "蛋白质")
     private Double protein;
 
-    @Schema(description = "碳水化合物")
     private Double carbohydrates;
 
-    @Schema(description = "膳食纤维")
     private Double dietary_fiber;
 
-    @Schema(description = "钾")
     private Double potassium;
 
-    @Schema(description = "钠")
     private Double sodium;
-
-    public FoodItem() {
-    }
-
-    public FoodItem(int foodId, String name, int calories) {
-        this.foodid = foodId;
-        this.name = name;
-        this.calories = calories;
-    }
 
     public void setFoodid(Integer id) {
         this.foodid = id;
