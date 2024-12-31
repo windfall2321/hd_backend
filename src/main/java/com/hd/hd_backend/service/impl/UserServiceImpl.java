@@ -90,9 +90,9 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new Exception("用户不存在");
         }
-        
+
         // 如果要更新用户名，需要检查新用户名是否已存在
-        if (!(updateInfo.getName().equals(user.getName())) && !updateInfo.getName().isEmpty()) {
+        if (updateInfo.getName()!=null&&!(updateInfo.getName().equals(user.getName()))) {
             User existingUser = userMapper.findByPhone(updateInfo.getName());
             if (existingUser != null && !existingUser.getId().equals(userId)) {
                 throw new Exception("用户名已存在");
