@@ -78,27 +78,15 @@ public class NormalUser extends User {
         this.phone = phone;
     }
 
-    public boolean login(String password) {
-        return this.password.equals(password);
-    }
-    
-    public void register() {
-        this.isBlocked = 0;
-        // 注册逻辑
-    }
+    public NormalUser(){
+        this.profilePicture="https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800";
+        this.isBlocked=0;};
     
     public void updateReminder() {
         // 更新提醒设置
     }
     
-    public void changeInfo(String name, Integer age, Integer weight, Integer height, String phone) {
-        this.name = name;
-        this.age = age;
-        this.weight = weight;
-        this.height = height;
-        this.phone = phone;
-    }
-    
+
     public void viewPost(String postId) {
         // 查看帖子
     }
@@ -149,16 +137,6 @@ public class NormalUser extends User {
     
 
     
-    public boolean addFoodRecord(FoodItem foodItem) {
-        // 添加食物记录
-        return true;
-    }
-    
-
-    
-    public void addExercise(String exerciseType, int duration) {
-        // 添加运动记录
-    }
 
     public void update(NormalUser updateInfo) {
         if (updateInfo.getName() != null && !updateInfo.getName().isEmpty()) {

@@ -1,10 +1,13 @@
 package com.hd.hd_backend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hd.hd_backend.dto.*;
+import com.hd.hd_backend.dto.ExerciseRecordDTO;
+import com.hd.hd_backend.dto.FoodRecordDTO;
 import com.hd.hd_backend.entity.*;
-import com.hd.hd_backend.mapper.*;
-import com.hd.hd_backend.service.*;
+import com.hd.hd_backend.service.ExerciseService;
+import com.hd.hd_backend.service.FoodService;
+import com.hd.hd_backend.service.PostService;
+import com.hd.hd_backend.service.UserService;
 import com.hd.hd_backend.utils.Code;
 import com.hd.hd_backend.utils.JsonUtils;
 import com.hd.hd_backend.utils.WebSocketSessionManager;
@@ -14,10 +17,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 @Component
 public class UserWebSocketHandler extends TextWebSocketHandler {
     @Autowired
@@ -39,7 +39,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
         // 假设消息格式为 "action:payload"
         String[] parts = payload.split(":", 2); // 限制分割为 2 部分
         String action = parts[0];
-        UserDTO userDTO;
+        
 
 
         switch (action) {
@@ -359,7 +359,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 try {
                     Post post = objectMapper.readValue(parts[1], Post.class);
                     post.setUserId((Integer) session.getAttributes().get("userId"));
-                    post.setTimestamp(new Date());
+
+                    //post.setTimestamp(time);
                     post.setIsOffending(0);
                     postService.createPost(post);
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_CREATE_SUCCESS.ordinal(), "帖子创建成功","message")));
@@ -418,29 +419,9 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage("未知操作"));
         }
     }
-    private UserDTO parseUserDTO(String data) {
-        try {
-            UserDTO userDTO = objectMapper. readValue(data, UserDTO.class); // 使用 ObjectMapper 解析 JSON
-            System.out.println("解析后的 JSON: " + objectMapper.writeValueAsString(userDTO)); // 输出解析后的 JSON
-            return userDTO;
-        } catch (Exception e) {
-            // 处理解析异常
-            e.printStackTrace(); // 输出异常信息
-            return null; // 或者抛出自定义异常
-        }
-    }
 
-    private String UserToJson(NormalUser user) {
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(user);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
 
-    }
+
 
 
 

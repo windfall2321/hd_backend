@@ -1,5 +1,7 @@
 package com.hd.hd_backend.entity;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Post {
@@ -8,9 +10,15 @@ public class Post {
     private Integer userId;
     private String content;
     private String tags;
-    private Date timestamp;
+    private String  timestamp;
     private Integer isOffending;
-
+    public Post() {
+        LocalDateTime now = LocalDateTime.now();
+        // 格式化为 MySQL 的 DATETIME 格式
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String time  = now.format(formatter);
+        this.timestamp = time;
+    }
     // Getters and Setters
     public Integer getPostId() {
         return postId;
@@ -52,11 +60,11 @@ public class Post {
         this.tags = tags;
     }
 
-    public Date getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
