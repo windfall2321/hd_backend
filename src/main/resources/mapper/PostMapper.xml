@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.PostMapper">
+    <insert id="insertPost" parameterType="com.hd.hd_backend.entity.Post">
+        INSERT INTO post (title, user_id, content, tags, timestamp, is_offending)
+        VALUES (#{title}, #{userId}, #{content}, #{tags}, #{timestamp}, #{isOffending})
+    </insert>
+
+    <delete id="deletePost">
+        DELETE FROM post WHERE post_id = #{postId}
+    </delete>
+
+    <update id="updatePost" parameterType="com.hd.hd_backend.entity.Post">
+        UPDATE post
+        SET title = #{title},
+            content = #{content},
+            tags = #{tags},
+            is_offending = #{isOffending}
+        WHERE post_id = #{postId}
+    </update>
+
+    <select id="findVisiblePosts" resultType="com.hd.hd_backend.entity.Post">
+        SELECT * FROM post WHERE is_offending = 0
+    </select>
+
+    <select id="findUserPosts" resultType="com.hd.hd_backend.entity.Post">
+        SELECT * FROM post WHERE user_id = #{userId}
+    </select>
+</mapper> 

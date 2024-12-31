@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public NormalUser register(UserDTO userDTO) throws Exception {
+    public NormalUser register(NormalUser normalUser) throws Exception {
         // 检查用户名是否已存在
 //        if (userMapper.findByName(userDTO.getName()) != null) {
 //            throw new Exception("用户名已存在");
@@ -25,54 +25,56 @@ public class UserServiceImpl implements UserService {
        
 
         // 创建新用户
-        NormalUser user = new NormalUser();
-        user.setName(userDTO.getName());
-        user.setPassword(userDTO.getPassword());  // 实际应用中应该加密存储
-        user.setWeight(userDTO.getWeight());
-        user.setAge(userDTO.getAge());
-        user.setHeight(userDTO.getHeight());
-        user.setPhone(userDTO.getPhone());
-        user.setIsBlocked(0);  // 新用户��未被封禁
-        user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
+//        NormalUser user = new NormalUser();
+//        user.setName(normalUser.getName());
+//        user.setPassword(normalUser.getPassword());  // 实际应用中应该加密存储
+//        user.setWeight(normalUser.getWeight());
+//        user.setAge(normalUser.getAge());
+//        user.setHeight(normalUser.getHeight());
+//        user.setPhone(normalUser.getPhone());
+//        user.setIsBlocked(0);  // 新用户��未被封禁
+//        user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
+//        user.setGender(normalUser.getGender());
+//        user.setActivityFactor(normalUser.getActivityFactor());
         // 保存到数据库
-        userMapper.insertUser(user);
-        int id=userMapper.findByPhone(user.getPhone()).getId();
-        user.setId(id);
-        userMapper.insertNormalUser(user);
+        userMapper.insertUser(normalUser);
+        int id=userMapper.findByPhone(normalUser.getPhone()).getId();
+        normalUser.setId(id);
+        userMapper.insertNormalUser(normalUser);
         return userMapper.findById(id);
     }
 
     @Override
-    public User login(UserDTO userDTO) throws Exception {
+    public User login(NormalUser  normalUser) throws Exception {
         // 验证参数
-        if (userDTO.getPhone() == null || userDTO.getPhone().trim().isEmpty()) {
+        if (normalUser.getPhone() == null || normalUser.getPhone().trim().isEmpty()) {
             throw new Exception("手机号不能为空");
         }
-        if (userDTO.getPassword() == null || userDTO.getPassword().trim().isEmpty()) {
+        if (normalUser.getPassword() == null || normalUser.getPassword().trim().isEmpty()) {
             throw new Exception("密码不能为空");
         }
 
 
         // 通过手机号查找用户
-        User user = userMapper.findByPhone(userDTO.getPhone());
+        User user = userMapper.findByPhone(normalUser.getPhone());
         if (user == null) {
             throw new Exception("用户不存在");
         }
 
         // 验证密码
-        if (!user.getPassword().equals(userDTO.getPassword())) {
+        if (!user.getPassword().equals(normalUser.getPassword())) {
             throw new Exception("密码错误");
         }
 
         if (user.getIsAdmin() == 0)
         {
-            NormalUser normalUser=userMapper.findById(user.getId());
+            NormalUser normal=userMapper.findById(user.getId());
             // 检查账号状态
-            if (normalUser.getIsBlocked() == 1) {
+            if (normal.getIsBlocked() == 1) {
                 throw new Exception("账号已被封禁");
             }
 
-            return normalUser;
+            return normal;
 
         }
         else

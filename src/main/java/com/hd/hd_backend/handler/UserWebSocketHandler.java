@@ -14,6 +14,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +26,9 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private ExerciseService exerciseService;
     @Autowired
     private FoodService foodService;
-    // 错误映射
-    private static final Map<String, String> errorMapping = new HashMap<>();
-    static {
-        errorMapping.put("手机号不能为空", "{\"error_code\":400,\"error_message\":\"手机号���能为空\"}");
-        errorMapping.put("密码不能为空", "{\"error_code\":400,\"error_message\":\"密码不能为空\"}");
-        errorMapping.put("用户不存在", "{\"error_code\":404,\"error_message\":\"用户不存在\"}");
-        errorMapping.put("密码错误", "{\"error_code\":401,\"error_message\":\"密码错误\"}");
-        errorMapping.put("账号已被封禁", "{\"error_code\":403,\"error_message\":\"账号已被封禁\"}");
-    }
+    @Autowired
+    private PostService postService;
+
     private final ObjectMapper objectMapper = new ObjectMapper(); // 创建 ObjectMapper 实例
 
     @Override
@@ -46,13 +41,15 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
         String action = parts[0];
         UserDTO userDTO;
 
+
         switch (action) {
-            case "register":
-                userDTO = parseUserDTO(parts[1]);
-                if (userDTO != null) {
-                    System.out.println("解析后的用户信息: " + userDTO); // 输出解析后的用户信息
+            case "register":{
+                //userDTO = parseUserDTO(parts[1]);
+                NormalUser normalUser =JsonUtils.fromJson(parts[1], NormalUser.class);
+                if (normalUser != null) {
+                    System.out.println("解析后的用户信息: " + normalUser ); // 输出解析后的用户信息
                     try {
-                        NormalUser user = userService.register(userDTO);
+                        NormalUser user = userService.register(normalUser );
 
 
 
@@ -71,13 +68,13 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 } else {
                     session.sendMessage(new TextMessage("解析用户信息失败"));
                 }
-                break;
+                break;}
             case "login":
-                userDTO = parseUserDTO(parts[1]);
-                if (userDTO != null) {
-                    System.out.println("解析后的用户信息: " + userDTO); // 输出解析后的用户信息
+                NormalUser normalUser =JsonUtils.fromJson(parts[1], NormalUser.class);
+                if (normalUser != null) {
+                    System.out.println("解析后的用户信息: " + normalUser); // 输出解析后的用户信息
                     try {
-                        NormalUser user =(NormalUser) userService.login(userDTO);
+                        NormalUser user =(NormalUser) userService.login(normalUser);
                         session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.LOGIN_SUCCESS.ordinal(),user,"data")) );
                         WebSocketSessionManager.addSession(user.getId(), session);
                         session.getAttributes().put("userId", user.getId());
@@ -354,6 +351,69 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
                 }
                 break;
+            case "createPost":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_CREATE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Post post = objectMapper.readValue(parts[1], Post.class);
+                    post.setUserId((Integer) session.getAttributes().get("userId"));
+                    post.setTimestamp(new Date());
+                    post.setIsOffending(0);
+                    postService.createPost(post);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_CREATE_SUCCESS.ordinal(), "帖子创建成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_CREATE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "deletePost":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_DELETE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer postId = Integer.parseInt(parts[1]);
+                    postService.deletePost(postId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_DELETE_SUCCESS.ordinal(), "帖子删除成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_DELETE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "updatePost":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_UPDATE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Post post = objectMapper.readValue(parts[1], Post.class);
+                    postService.updatePost(post);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_UPDATE_SUCCESS.ordinal(), "帖子更新成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_UPDATE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "getVisiblePosts":
+                try {
+                    List<Post> posts = postService.findVisiblePosts();
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_GET_SUCCESS.ordinal(), posts,"data")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "getUserPosts":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_GET_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer userId = (Integer) session.getAttributes().get("userId");
+                    List<Post> posts = postService.findUserPosts(userId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_GET_SUCCESS.ordinal(), posts,"data")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(Code.POST_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
             default:
                 session.sendMessage(new TextMessage("未知操作"));
         }
@@ -382,9 +442,6 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
 
     }
 
-    private String handleLoginError(String errorMessage) {
-        // 从映射中获取错误响应
-        return errorMapping.getOrDefault(errorMessage, "{\"error_code\":500,\"error_message\":\"登录失败\"}");
-    }
+
 
 }

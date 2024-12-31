@@ -6,8 +6,8 @@ import com.hd.hd_backend.entity.User;
 
 public interface UserService {
 
-    NormalUser register(UserDTO userDTO) throws Exception;
-    User login(UserDTO userDTO) throws Exception;
+    NormalUser register(NormalUser normalUser) throws Exception;
+    User login(NormalUser normalUser) throws Exception;
     void updateUser(Integer userId, NormalUser updateInfo) throws Exception;
     NormalUser getUserById(Integer userId) throws Exception;
 } 

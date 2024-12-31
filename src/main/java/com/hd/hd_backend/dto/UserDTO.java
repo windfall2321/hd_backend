@@ -21,6 +21,8 @@ public class UserDTO {
 
     private Date loginTime;
 
+
+
     public String getName() {
         return name;
     }
