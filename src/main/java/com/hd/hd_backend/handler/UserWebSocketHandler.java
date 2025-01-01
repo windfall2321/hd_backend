@@ -9,6 +9,7 @@ import com.hd.hd_backend.service.FoodService;
 import com.hd.hd_backend.service.PostService;
 import com.hd.hd_backend.service.UserService;
 import com.hd.hd_backend.service.CommentService;
+import com.hd.hd_backend.service.WeightService;
 import com.hd.hd_backend.utils.WebSocketCode;
 import com.hd.hd_backend.utils.JsonUtils;
 import com.hd.hd_backend.utils.WebSocketSessionManager;
@@ -31,6 +32,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private PostService postService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private WeightService weightService;
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // 创建 ObjectMapper 实例
 
@@ -479,6 +482,74 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_SUCCESS.ordinal(), comments,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "addWeight":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_ADD_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Weight weight = objectMapper.readValue(parts[1], Weight.class);
+                    weight.setUserId((Integer) session.getAttributes().get("userId"));
+                    weightService.addWeight(weight);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_ADD_SUCCESS.ordinal(), "体重记录添加成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_ADD_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "deleteWeight":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_DELETE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer userId = (Integer) session.getAttributes().get("userId");
+                    String time = parts[1];
+                    weightService.deleteWeight(userId, time);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_DELETE_SUCCESS.ordinal(), "体重记录删除成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_DELETE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "updateWeight":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_UPDATE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Weight weight = objectMapper.readValue(parts[1], Weight.class);
+                    weight.setUserId((Integer) session.getAttributes().get("userId"));
+                    weightService.updateWeight(weight);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_UPDATE_SUCCESS.ordinal(), "体重记录更新成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_UPDATE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "getUserWeights":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_GET_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer userId = (Integer) session.getAttributes().get("userId");
+                    List<Weight> weights = weightService.getUserWeights(userId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_GET_SUCCESS.ordinal(), weights,"data")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "getLatestWeight":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_LATEST_GET_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer userId = (Integer) session.getAttributes().get("userId");
+                    Weight weight = weightService.getLatestWeight(userId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_LATEST_GET_SUCCESS.ordinal(), weight,"data")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_LATEST_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
                 }
                 break;
             default:

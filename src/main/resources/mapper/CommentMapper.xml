@@ -18,7 +18,7 @@
     </update>
 
     <select id="getPostComments" resultType="com.hd.hd_backend.entity.Comment">
-        SELECT * FROM comment WHERE post_id = #{postId}
+        SELECT * FROM comment WHERE post_id = #{postId} and is_offending=0
     </select>
 
     <select id="getUserComments" resultType="com.hd.hd_backend.entity.Comment">

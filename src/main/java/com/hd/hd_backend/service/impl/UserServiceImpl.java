@@ -2,7 +2,9 @@ package com.hd.hd_backend.service.impl;
 
 import com.hd.hd_backend.entity.NormalUser;
 import com.hd.hd_backend.entity.User;
+import com.hd.hd_backend.entity.Weight;
 import com.hd.hd_backend.mapper.UserMapper;
+import com.hd.hd_backend.mapper.WeightMapper;
 import com.hd.hd_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
-
+    private WeightMapper weightMapper;
     @Override
     public NormalUser register(NormalUser normalUser) throws Exception {
         // 检查用户名是否已存在
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService {
         int id=userMapper.findByPhone(normalUser.getPhone()).getId();
         normalUser.setId(id);
         userMapper.insertNormalUser(normalUser);
+        Weight weight=new Weight();
+        weight.setUserId(id);
+        weightMapper.insertWeight(weight);//自动插入一个体重
         return userMapper.findById(id);
     }
 
@@ -92,12 +97,12 @@ public class UserServiceImpl implements UserService {
         }
 
         // 如果要更新用户名，需要检查新用户名是否已存在
-        if (updateInfo.getName()!=null&&!(updateInfo.getName().equals(user.getName()))) {
-            User existingUser = userMapper.findByPhone(updateInfo.getName());
-            if (existingUser != null && !existingUser.getId().equals(userId)) {
-                throw new Exception("用户名已存在");
-            }
-        }
+//        if (updateInfo.getName()!=null&&!(updateInfo.getName().equals(user.getName()))) {
+//            User existingUser = userMapper.findByPhone(updateInfo.getName());
+//            if (existingUser != null && !existingUser.getId().equals(userId)) {
+//                throw new Exception("用户名已存在");
+//            }
+//        }
 
         // 如果要更新手机号，需要检查新手机号是否已存在
         if (updateInfo.getPhone() != null && !updateInfo.getPhone().isEmpty()) {
