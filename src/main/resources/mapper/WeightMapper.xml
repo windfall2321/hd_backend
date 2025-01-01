@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.WeightMapper">
+    <insert id="insertWeight" parameterType="com.hd.hd_backend.entity.Weight">
+        INSERT INTO weight (user_id, weight, time)
+        VALUES (#{userId}, #{weight}, #{time})
+    </insert>
+
+    <delete id="deleteWeight">
+        DELETE FROM weight WHERE user_id = #{userId} AND time = #{time}
+    </delete>
+
+    <update id="updateWeight" parameterType="com.hd.hd_backend.entity.Weight">
+        UPDATE weight
+        SET weight = #{weight}
+        WHERE user_id = #{userId} AND time = #{time}
+    </update>
+
+    <select id="getUserWeights" resultType="com.hd.hd_backend.entity.Weight">
+        SELECT * FROM weight WHERE user_id = #{userId}
+        ORDER BY time DESC
+    </select>
+
+    <select id="getLatestWeight" resultType="com.hd.hd_backend.entity.Weight">
+        SELECT * FROM weight WHERE user_id = #{userId}
+        ORDER BY time DESC LIMIT 1
+    </select>
+</mapper> 
