@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.NotificationMapper">
+    <insert id="insertNotification" parameterType="com.hd.hd_backend.entity.Notification">
+        INSERT INTO notification (data, sent, user_id, type, create_time)
+        VALUES (#{data}, #{sent}, #{userId}, #{type}, #{createTime})
+    </insert>
+
+    <delete id="deleteNotification">
+        DELETE FROM notification WHERE notification_id = #{notificationId}
+    </delete>
+
+    <update id="updateNotification" parameterType="com.hd.hd_backend.entity.Notification">
+        UPDATE notification
+        SET data = #{data},
+            type = #{type}
+        WHERE notification_id = #{notificationId}
+    </update>
+
+    <select id="getUserNotifications" resultType="com.hd.hd_backend.entity.Notification">
+        SELECT * FROM notification 
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="markAsSent">
+        UPDATE notification
+        SET sent = 1
+        WHERE notification_id = #{notificationId}
+    </update>
+</mapper> 

@@ -27,6 +27,8 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
     private CommentService commentService;
     @Autowired
     private WeightService weightService;
+    @Autowired
+    private NotificationService notificationService;
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // 创建 ObjectMapper 实例
 
@@ -606,6 +608,72 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         "识别失败: " + e.getMessage(),
                         "error_message"
                     )));
+                }
+                break;
+            case "createNotification":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_CREATE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Notification notification = objectMapper.readValue(parts[1], Notification.class);
+                    notification.setUserId((Integer) session.getAttributes().get("userId"));
+                    notificationService.createNotification(notification);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_CREATE_SUCCESS.ordinal(), "通知创建成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_CREATE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "deleteNotification":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_DELETE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer notificationId = Integer.parseInt(parts[1]);
+                    notificationService.deleteNotification(notificationId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_DELETE_SUCCESS.ordinal(), "通知删除成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_DELETE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "updateNotification":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_UPDATE_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Notification notification = objectMapper.readValue(parts[1], Notification.class);
+                    notificationService.updateNotification(notification);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_UPDATE_SUCCESS.ordinal(), "通知更新成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_UPDATE_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "getUserNotifications":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_GET_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer userId = (Integer) session.getAttributes().get("userId");
+                    List<Notification> notifications = notificationService.getUserNotifications(userId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_GET_SUCCESS.ordinal(), notifications,"data")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "markNotificationAsSent":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_MARK_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    Integer notificationId = Integer.parseInt(parts[1]);
+                    notificationService.markAsSent(notificationId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_MARK_SUCCESS.ordinal(), "通知标记成功","message")));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_MARK_FAIL.ordinal(), e.getMessage(),"error_message")));
                 }
                 break;
             default:

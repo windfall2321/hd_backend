@@ -4,60 +4,69 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Notification {
-    private int notificationId;
+    private Integer notificationId;
     private String data;
-    private int sent;
-    private int userId;
-    private int type;
+    private Integer sent;
+    private Integer userId;
+    private Integer type;
     private String createTime;
 
-    public Notification() {}
-    public Notification( String data, int userId) {
-        this.data = data;
-        this.userId = userId;
+    public Notification() {
         LocalDateTime now = LocalDateTime.now();
-// 格式化为 MySQL 的 DATETIME 格式
+        // 格式化为 MySQL 的 DATETIME 格式
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.createTime  = now.format(formatter);
+        String time = now.format(formatter);
+        this.createTime = time;
+        this.sent = 0;  // 默认未发送
     }
-    public int getNotificationId() {
-        return notificationId;
 
+    // Getters and Setters
+    public Integer getNotificationId() {
+        return notificationId;
     }
-    public void setNotificationId(int notificationId) {
+
+    public void setNotificationId(Integer notificationId) {
         this.notificationId = notificationId;
     }
+
     public String getData() {
         return data;
     }
+
     public void setData(String data) {
         this.data = data;
     }
-    public int getSent() {
+
+    public Integer getSent() {
         return sent;
     }
-    public void setSent(int sent) {
+
+    public void setSent(Integer sent) {
         this.sent = sent;
     }
-    public int getUserId() {
+
+    public Integer getUserId() {
         return userId;
     }
-    public void setUserId(int userId) {
+
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
-    public int getType() {
+
+    public Integer getType() {
         return type;
     }
-    public void setType(int type) {
 
+    public void setType(Integer type) {
         this.type = type;
     }
+
     public String getCreateTime() {
         return createTime;
     }
+
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
-
 }
 
