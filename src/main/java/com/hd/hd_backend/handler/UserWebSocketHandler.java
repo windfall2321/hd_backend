@@ -1,9 +1,7 @@
 package com.hd.hd_backend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hd.hd_backend.dto.ExerciseRecordDTO;
-import com.hd.hd_backend.dto.FoodRecordDTO;
-import com.hd.hd_backend.dto.PostDTO;
+import com.hd.hd_backend.dto.*;
 import com.hd.hd_backend.entity.*;
 import com.hd.hd_backend.service.*;
 import com.hd.hd_backend.utils.*;
@@ -460,7 +458,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "getPostComments":
                 try {
                     Integer postId = Integer.parseInt(parts[1]);
-                    List<Comment> comments = commentService.getPostComments(postId);
+                    List<CommentDTO> comments = commentService.getPostComments(postId);
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_SUCCESS.ordinal(), comments,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
@@ -473,7 +471,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 try {
                     Integer userId = (Integer) session.getAttributes().get("userId");
-                    List<Comment> comments = commentService.getUserComments(userId);
+                    List<CommentDTO> comments = commentService.getUserComments(userId);
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_SUCCESS.ordinal(), comments,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_FAIL.ordinal(), e.getMessage(),"error_message")));

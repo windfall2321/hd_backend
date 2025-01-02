@@ -17,11 +17,17 @@
         WHERE comment_id = #{commentId}
     </update>
 
-    <select id="getPostComments" resultType="com.hd.hd_backend.entity.Comment">
-        SELECT * FROM comment WHERE post_id = #{postId} and is_offending=0
+    <select id="getPostComments" resultType="com.hd.hd_backend.dto.CommentDTO">
+        SELECT c.*, u.name as commentUserName, u.profile_picture as commentUserProfilePicture
+        FROM comment c
+        LEFT JOIN user u ON c.user_id = u.id 
+        WHERE c.post_id = #{postId} AND c.is_offending = 0
     </select>
 
-    <select id="getUserComments" resultType="com.hd.hd_backend.entity.Comment">
-        SELECT * FROM comment WHERE user_id = #{userId}
+    <select id="getUserComments" resultType="com.hd.hd_backend.dto.CommentDTO">
+        SELECT c.*, u.name as commentUserName, u.profile_picture as commentUserProfilePicture
+        FROM comment c
+        LEFT JOIN user u ON c.user_id = u.id 
+        WHERE c.user_id = #{userId}
     </select>
 </mapper> 
