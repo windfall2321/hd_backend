@@ -136,7 +136,7 @@ public class DietAnalysis {
     }
 
     public void analyzeNutrients(NormalUser normalUser) {
-        int weight=normalUser.getWeight();
+        Double weight=normalUser.getWeight();
         int height=normalUser.getHeight();
         int age=normalUser.getAge();
         int gender=normalUser.getGender();

@@ -14,6 +14,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
     private WeightMapper weightMapper;
     @Override
     public NormalUser register(NormalUser normalUser) throws Exception {
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
 //        user.setAge(normalUser.getAge());
 //        user.setHeight(normalUser.getHeight());
 //        user.setPhone(normalUser.getPhone());
-//        user.setIsBlocked(0);  // 新用户��未被封禁
+//        user.setIsBlocked(0);  // 新用户未被封禁
 //        user.setProfilePicture("https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800");
 //        user.setGender(normalUser.getGender());
 //        user.setActivityFactor(normalUser.getActivityFactor());
@@ -42,9 +43,15 @@ public class UserServiceImpl implements UserService {
         int id=userMapper.findByPhone(normalUser.getPhone()).getId();
         normalUser.setId(id);
         userMapper.insertNormalUser(normalUser);
-        Weight weight=new Weight();
-        weight.setUserId(id);
-        weightMapper.insertWeight(weight);//自动插入一个体重
+
+        // 创建初始体重记录
+        if (normalUser.getWeight() != null) {  // 只有当用户提供了初始体重时才创建记录
+            Weight weight = new Weight();
+            weight.setUserId(id);
+            weight.setWeight(normalUser.getWeight());  // 使用注册时提供的体重
+            weightMapper.insertWeight(weight);
+        }
+
         return userMapper.findById(id);
     }
 

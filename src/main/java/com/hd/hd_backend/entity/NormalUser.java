@@ -4,7 +4,7 @@ import java.util.List;
 
 public class NormalUser extends User {
 
-    private Integer weight;
+    private Double weight;
     private Integer age;
 
     private Integer height;
@@ -20,11 +20,11 @@ public class NormalUser extends User {
     // Getters and Setters
 
 
-    public Integer getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
