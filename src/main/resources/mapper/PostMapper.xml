@@ -19,11 +19,17 @@
         WHERE post_id = #{postId}
     </update>
 
-    <select id="findVisiblePosts" resultType="com.hd.hd_backend.entity.Post">
-        SELECT * FROM post WHERE is_offending = 0
+    <select id="findVisiblePosts" resultType="com.hd.hd_backend.dto.PostDTO">
+        SELECT p.*, u.name as postUserName
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id 
+        WHERE p.is_offending = 0
     </select>
 
-    <select id="findUserPosts" resultType="com.hd.hd_backend.entity.Post">
-        SELECT * FROM post WHERE user_id = #{userId}
+    <select id="findUserPosts" resultType="com.hd.hd_backend.dto.PostDTO">
+        SELECT p.*, u.name as postUserName
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id 
+        WHERE p.user_id = #{userId}
     </select>
 </mapper> 

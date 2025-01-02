@@ -43,4 +43,8 @@ SELECT * FROM healthy_diet.food_item WHERE name = #{name}
     SELECT * FROM food_item WHERE foodid = #{foodId}
 </select>
 
+<select id="findByNameLike" resultType="com.hd.hd_backend.entity.FoodItem">
+    SELECT * FROM food_item WHERE name LIKE #{name} LIMIT 1
+</select>
+
         </mapper>

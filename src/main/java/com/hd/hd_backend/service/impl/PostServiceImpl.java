@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service.impl;
 
+import com.hd.hd_backend.dto.PostDTO;
 import com.hd.hd_backend.entity.Post;
 import com.hd.hd_backend.mapper.PostMapper;
 import com.hd.hd_backend.service.PostService;
@@ -29,12 +30,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findVisiblePosts() {
+    public List<PostDTO> findVisiblePosts() {
         return postMapper.findVisiblePosts();
     }
 
     @Override
-    public List<Post> findUserPosts(Integer userId) {
+    public List<PostDTO> findUserPosts(Integer userId) {
         return postMapper.findUserPosts(userId);
     }
 } 
