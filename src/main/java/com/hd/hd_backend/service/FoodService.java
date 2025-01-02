@@ -14,6 +14,7 @@ public interface FoodService {
     void addFoodItem(FoodItem foodItem) throws Exception;
     void updateFoodItem(FoodItem foodItem) throws Exception;
     void deleteFoodItem(Integer foodId) throws Exception;
+    FoodItem findByNameLike(String name);
     
     // FoodRecord相关方法
     List<FoodRecordDTO> getFoodRecordsByUserId(int userId);

@@ -17,4 +17,7 @@ public class WebSocketSessionManager {
     public static void removeSession(Integer userId) {
         USER_SESSIONS.remove(userId);
     }
+
+    public static void removeSession(WebSocketSession session) {
+    }
 }

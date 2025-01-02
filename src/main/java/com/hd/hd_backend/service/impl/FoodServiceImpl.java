@@ -131,4 +131,9 @@ public class FoodServiceImpl implements FoodService {
             throw new Exception("删除食物失败: " + e.getMessage());
         }
     }
+
+    @Override
+    public FoodItem findByNameLike(String name) {
+        return foodMapper.findByNameLike(name);
+    }
 } 

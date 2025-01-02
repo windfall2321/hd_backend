@@ -14,4 +14,5 @@ public interface FoodMapper {
     int update(FoodItem foodItem);
     int delete(@Param("foodId") Integer foodId);
     FoodItem findById(@Param("foodId") Integer foodId);
+    FoodItem findByNameLike(@Param("name") String name);
 }

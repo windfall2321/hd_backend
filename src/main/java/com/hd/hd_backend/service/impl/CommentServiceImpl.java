@@ -1,5 +1,6 @@
 package com.hd.hd_backend.service.impl;
 
+import com.hd.hd_backend.dto.CommentDTO;
 import com.hd.hd_backend.entity.Comment;
 import com.hd.hd_backend.mapper.CommentMapper;
 import com.hd.hd_backend.service.CommentService;
@@ -29,12 +30,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getPostComments(Integer postId) {
+    public List<CommentDTO> getPostComments(Integer postId) {
         return commentMapper.getPostComments(postId);
     }
 
     @Override
-    public List<Comment> getUserComments(Integer userId) {
+    public List<CommentDTO> getUserComments(Integer userId) {
         return commentMapper.getUserComments(userId);
     }
 } 

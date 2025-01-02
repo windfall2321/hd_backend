@@ -1,18 +1,11 @@
 package com.hd.hd_backend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hd.hd_backend.dto.ExerciseRecordDTO;
-import com.hd.hd_backend.dto.FoodRecordDTO;
+import com.hd.hd_backend.dto.*;
 import com.hd.hd_backend.entity.*;
-import com.hd.hd_backend.service.ExerciseService;
-import com.hd.hd_backend.service.FoodService;
-import com.hd.hd_backend.service.PostService;
-import com.hd.hd_backend.service.UserService;
-import com.hd.hd_backend.service.CommentService;
-import com.hd.hd_backend.service.WeightService;
-import com.hd.hd_backend.utils.WebSocketCode;
-import com.hd.hd_backend.utils.JsonUtils;
-import com.hd.hd_backend.utils.WebSocketSessionManager;
+import com.hd.hd_backend.service.*;
+import com.hd.hd_backend.utils.*;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -402,7 +395,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 break;
             case "getVisiblePosts":
                 try {
-                    List<Post> posts = postService.findVisiblePosts();
+                    List<PostDTO> posts = postService.findVisiblePosts();
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.POST_GET_SUCCESS.ordinal(), posts,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.POST_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
@@ -415,7 +408,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 try {
                     Integer userId = (Integer) session.getAttributes().get("userId");
-                    List<Post> posts = postService.findUserPosts(userId);
+                    List<PostDTO> posts = postService.findUserPosts(userId);
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.POST_GET_SUCCESS.ordinal(), posts,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.POST_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
@@ -465,7 +458,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
             case "getPostComments":
                 try {
                     Integer postId = Integer.parseInt(parts[1]);
-                    List<Comment> comments = commentService.getPostComments(postId);
+                    List<CommentDTO> comments = commentService.getPostComments(postId);
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_SUCCESS.ordinal(), comments,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
@@ -478,7 +471,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 try {
                     Integer userId = (Integer) session.getAttributes().get("userId");
-                    List<Comment> comments = commentService.getUserComments(userId);
+                    List<CommentDTO> comments = commentService.getUserComments(userId);
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_SUCCESS.ordinal(), comments,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.COMMENT_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
@@ -550,6 +543,69 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_LATEST_GET_SUCCESS.ordinal(), weight,"data")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.WEIGHT_LATEST_GET_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "identify":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.FOOD_IDENTIFY_FAIL.ordinal(), "用户未登录","error_message")));
+                    break;
+                }
+                try {
+                    // 获取图片的base64编码
+                    String imageBase64 = parts[1];
+                    
+                    // 调用百度API识别菜品
+                    String result = APICaller.identifyDish(imageBase64, 1);  // 只取置信度最高的结果
+                    JSONObject jsonResult = new JSONObject(result);
+                    
+                    if (jsonResult.has("result") && jsonResult.getJSONArray("result").length() > 0) {
+                        JSONObject dish = jsonResult.getJSONArray("result").getJSONObject(0);
+                        String dishName = dish.getString("name");
+                        double calories = dish.getDouble("calorie");
+                        
+                        // 修改为模糊搜索
+                        FoodItem existingFood = foodService.findByNameLike("%" + dishName + "%");
+                        
+                        if (existingFood == null) {
+                            // 创建新的食物项
+                            FoodItem newFood = new FoodItem();
+                            newFood.setName(dishName);
+                            newFood.setCalories((int)calories);
+                            newFood.setType("其他");  // 默认类型
+                            // 其他营养成分设为null
+                            newFood.setFat(null);
+                            newFood.setProtein(null);
+                            newFood.setCarbohydrates(null);
+                            newFood.setDietaryFiber(null);
+                            newFood.setPotassium(null);
+                            newFood.setSodium(null);
+                            
+                            // 保存到数据库
+                            foodService.addFoodItem(newFood);
+                            
+                            // 获取插入后的完整记录，使用模糊搜索
+                            existingFood = foodService.findByNameLike("%" + dishName + "%");
+                        }
+                        
+                        // 返回食物信息给前端
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                            WebSocketCode.FOOD_IDENTIFY_SUCCESS.ordinal(),
+                            existingFood,
+                            "data"
+                        )));
+                    } else {
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                            WebSocketCode.FOOD_IDENTIFY_FAIL.ordinal(),
+                            "未能识别菜品",
+                            "error_message"
+                        )));
+                    }
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.FOOD_IDENTIFY_FAIL.ordinal(),
+                        "识别失败: " + e.getMessage(),
+                        "error_message"
+                    )));
                 }
                 break;
             default:
