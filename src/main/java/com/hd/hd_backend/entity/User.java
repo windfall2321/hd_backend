@@ -46,7 +46,7 @@ public void setPhone(String phone) {
     }
 
     public User() {
-        isAdmin=0;
+
     }
 
 

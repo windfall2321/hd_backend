@@ -74,7 +74,9 @@ public class NormalUser extends User {
 
     public NormalUser(){
         this.profilePicture="https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800";
-        this.isBlocked=0;};
+        this.isBlocked=0;
+    this.isAdmin=0;
+    };
     
     public void updateReminder() {
         // 更新提醒设置

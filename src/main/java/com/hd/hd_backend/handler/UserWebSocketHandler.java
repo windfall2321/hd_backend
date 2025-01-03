@@ -71,11 +71,12 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 break;}
             case "login":
-                NormalUser normalUser =JsonUtils.fromJson(parts[1], NormalUser.class);
-                if (normalUser != null) {
-                    System.out.println("解析后的用户信息: " + normalUser); // 输出解析后的用户信息
+                User User =JsonUtils.fromJson(parts[1], User.class);
+                if (User != null) {
+                    System.out.println("解析后的用户信息: " + User); // 输出解析后的用户信息
                     try {
-                        NormalUser user =(NormalUser) userService.login(normalUser);
+
+                        User user = userService.login( User);
                         session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.LOGIN_SUCCESS.ordinal(),user,"data")) );
                         WebSocketSessionManager.addSession(user.getId(), session);
                         session.getAttributes().put("userId", user.getId());

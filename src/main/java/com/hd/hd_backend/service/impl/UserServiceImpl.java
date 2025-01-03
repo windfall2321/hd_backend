@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(NormalUser  normalUser) throws Exception {
+    public User login(User  normalUser) throws Exception {
         // 验证参数
         if (normalUser.getPhone() == null || normalUser.getPhone().trim().isEmpty()) {
             throw new Exception("手机号不能为空");

@@ -26,25 +26,25 @@ public class AdminWebSocketHandler extends TextWebSocketHandler {
         String action = parts[0];
 
         switch (action) {
-            case "login":
-                Administrator loginAdmin = JsonUtils.fromJson(parts[1], Administrator.class);
-                try {
-                    Administrator admin = adminService.login(loginAdmin);
-                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                        WebSocketCode.ADMIN_LOGIN_SUCCESS.ordinal(),
-                        admin,
-                        "admin"
-                    )));
-                    WebSocketSessionManager.addSession(admin.getId(), session);
-                    session.getAttributes().put("adminId", admin.getId());
-                } catch (Exception e) {
-                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                        WebSocketCode.ADMIN_LOGIN_FAIL.ordinal(),
-                        e.getMessage(),
-                        "error_message"
-                    )));
-                }
-                break;
+//            case "login":
+//                Administrator loginAdmin = JsonUtils.fromJson(parts[1], Administrator.class);
+//                try {
+//                    Administrator admin = adminService.login(loginAdmin);
+//                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+//                        WebSocketCode.ADMIN_LOGIN_SUCCESS.ordinal(),
+//                        admin,
+//                        "admin"
+//                    )));
+//                    WebSocketSessionManager.addSession(admin.getId(), session);
+//                    session.getAttributes().put("adminId", admin.getId());
+//                } catch (Exception e) {
+//                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+//                        WebSocketCode.ADMIN_LOGIN_FAIL.ordinal(),
+//                        e.getMessage(),
+//                        "error_message"
+//                    )));
+//                }
+//                break;
 
             case "updateAdmin":
                 if (!session.getAttributes().containsKey("adminId")) {
