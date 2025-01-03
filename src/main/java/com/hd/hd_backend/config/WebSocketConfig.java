@@ -9,11 +9,11 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
     private final UserWebSocketHandler userWebSocketHandler;
-    private final AdminWebSocketHandler adminWebSocketHandler;
+//    private final AdminWebSocketHandler adminWebSocketHandler;
 
     public WebSocketConfig(UserWebSocketHandler userWebSocketHandler, AdminWebSocketHandler adminWebSocketHandler) {
         this.userWebSocketHandler = userWebSocketHandler;
-        this.adminWebSocketHandler = adminWebSocketHandler;
+//        this.adminWebSocketHandler = adminWebSocketHandler;
 
     }
 

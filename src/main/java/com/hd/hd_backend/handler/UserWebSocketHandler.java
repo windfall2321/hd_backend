@@ -930,13 +930,13 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 try {
                     List<PostDTO> allPosts = postService.getAllPosts();
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                        WebSocketCode.POST_GET_SUCCESS.ordinal(),
+                        WebSocketCode.POST_GET_ALL_SUCCESS.ordinal(),
                         allPosts,
                         "data"
                     )));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                        WebSocketCode.POST_GET_FAIL.ordinal(),
+                        WebSocketCode.POST_GET_ALL_FAIL.ordinal(),
                         e.getMessage(),
                         "error_message"
                     )));
