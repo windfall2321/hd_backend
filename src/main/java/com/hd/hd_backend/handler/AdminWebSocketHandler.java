@@ -2,103 +2,156 @@ package com.hd.hd_backend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hd.hd_backend.entity.*;
-import com.hd.hd_backend.mapper.FoodMapper;
 import com.hd.hd_backend.service.AdminService;
-import com.hd.hd_backend.service.ExerciseService;
-import com.hd.hd_backend.service.UserService;
-import com.hd.hd_backend.utils.JsonUtils;
-import com.hd.hd_backend.utils.WebSocketSessionManager;
+import com.hd.hd_backend.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Component
 public class AdminWebSocketHandler extends TextWebSocketHandler {
     @Autowired
-    private UserService userService;
-    @Autowired
-    private ExerciseService exerciseService;
-    @Autowired
-    private FoodMapper foodMapper;
-    @Autowired
     private AdminService adminService;
-    // 错误映射
-    private static final Map<String, String> errorMapping = new HashMap<>();
-    static {
-        errorMapping.put("手机号不能为空", "{\"error_code\":400,\"error_message\":\"手机号不能为空\"}");
-        errorMapping.put("密码不能为空", "{\"error_code\":400,\"error_message\":\"密码不能为空\"}");
-        errorMapping.put("用户不存在", "{\"error_code\":404,\"error_message\":\"用户不存在\"}");
-        errorMapping.put("密码错误", "{\"error_code\":401,\"error_message\":\"密码错误\"}");
-        errorMapping.put("账号已被封禁", "{\"error_code\":403,\"error_message\":\"账号已被封禁\"}");
-    }
-    private final ObjectMapper objectMapper = new ObjectMapper(); // 创建 ObjectMapper 实例
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        System.out.println("文本消息"); // 输出解析后的用户信息
         String payload = message.getPayload();
-        // 解析消息并执行相应的操作
-        // 假设消息格式为 "action:payload"
-        String[] parts = payload.split(":", 2); // 限制分割为 2 部分
+        String[] parts = payload.split(":", 2);
         String action = parts[0];
 
         switch (action) {
-            case "admin-login":
-                if (session.getAttributes().containsKey("userid")){
-                    session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"管理员已登录\"}"));
+            case "adminLogin":
+                Administrator loginAdmin = JsonUtils.fromJson(parts[1], Administrator.class);
+                try {
+                    Administrator admin = adminService.login(loginAdmin);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.ADMIN_LOGIN_SUCCESS.ordinal(),
+                        admin,
+                        "admin"
+                    )));
+                    WebSocketSessionManager.addSession(admin.getId(), session);
+                    session.getAttributes().put("adminId", admin.getId());
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.ADMIN_LOGIN_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
+                }
+                break;
+
+            case "updateAdmin":
+                if (!session.getAttributes().containsKey("adminId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.ADMIN_UPDATE_FAIL.ordinal(),
+                        "管理员未登录",
+                        "error_message"
+                    )));
                     break;
                 }
-                try{
-                    Administrator administrator=JsonUtils.fromJson(parts[1], Administrator.class);
-                    Integer id=adminService.login(administrator);
-                    session.getAttributes().put("userid", id);
-                    session.sendMessage(new TextMessage("{\"status\":\"200\",\"error_message\":\"登录成功\"}"));
-
-                }catch (Exception e)
-                {
-                    session.sendMessage(new TextMessage("{\"error_code\":\"401\",\"error_message\":\""+e.getMessage()+"\"}"));
+                try {
+                    Administrator updateInfo = objectMapper.readValue(parts[1], Administrator.class);
+                    Integer adminId = (Integer) session.getAttributes().get("adminId");
+                    adminService.updateAdmin(adminId, updateInfo);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.ADMIN_UPDATE_SUCCESS.ordinal(),
+                        "更新成功",
+                        "message"
+                    )));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.ADMIN_UPDATE_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
                 }
+                break;
 
-                break;
-            case "admin-addProfileImage":
-                break;
-            case "admin-blockUser":
-                if (!session.getAttributes().containsKey("userid")){
-                    session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"管理员未登录\"}"));
+            case "getAllUsers":
+                if (!session.getAttributes().containsKey("adminId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.GET_ALL_USERS_FAIL.ordinal(),
+                        "管理员未登录",
+                        "error_message"
+                    )));
                     break;
                 }
-                try{
-                    NormalUser normalUser=JsonUtils.fromJson(parts[1], NormalUser.class);
-                    adminService.blockUser(normalUser);
-                    WebSocketSession user_session=WebSocketSessionManager.getSession(normalUser.getId());
-                    if (user_session!=null){
-                        user_session.sendMessage(new TextMessage("{\"error_code\":\"110\",\"error_message\":\"你已被封禁\"}"));
-                        session.sendMessage(new TextMessage("用户在线"));
-                    }
-                    else{
-                        session.sendMessage(new TextMessage("用户未在线"));
-                    }
-
-
-
+                try {
+                    List<NormalUser> users = adminService.getAllUsers();
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.GET_ALL_USERS_SUCCESS.ordinal(),
+                        users,
+                        "data"
+                    )));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.GET_ALL_USERS_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
                 }
-                catch (Exception e){
-                    session.sendMessage(new TextMessage("{\"error_code\":\"401\",\"error_message\":\""+e.getMessage()+"\"}"));
+                break;
+
+            case "blockUser":
+                if (!session.getAttributes().containsKey("adminId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.BLOCK_USER_FAIL.ordinal(),
+                        "管理员未登录",
+                        "error_message"
+                    )));
+                    break;
                 }
+                try {
+                    Integer userId = Integer.parseInt(parts[1]);
+                    adminService.blockUser(userId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.BLOCK_USER_SUCCESS.ordinal(),
+                        "封禁成功",
+                        "message"
+                    )));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.BLOCK_USER_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
+                }
+                break;
+
+            case "unblockUser":
+                if (!session.getAttributes().containsKey("adminId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.UNBLOCK_USER_FAIL.ordinal(),
+                        "管理员未登录",
+                        "error_message"
+                    )));
+                    break;
+                }
+                try {
+                    Integer userId = Integer.parseInt(parts[1]);
+                    adminService.unblockUser(userId);
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.UNBLOCK_USER_SUCCESS.ordinal(),
+                        "解封成功",
+                        "message"
+                    )));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.UNBLOCK_USER_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
+                }
+                break;
 
             default:
-                session.sendMessage(new TextMessage("{\"error_code\":\"400\",\"error_message\":\"格式错误\"}"));
+                session.sendMessage(new TextMessage("未知操作"));
         }
     }
-
-    private String handleLoginError(String errorMessage) {
-        // 从映射中获取错误响应
-        return errorMapping.getOrDefault(errorMessage, "{\"error_code\":500,\"error_message\":\"登录失败\"}");
-    }
-
 }

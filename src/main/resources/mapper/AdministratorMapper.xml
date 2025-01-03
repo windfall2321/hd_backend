@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hd.hd_backend.mapper.AdministratorMapper">
+    <select id="findById" resultType="com.hd.hd_backend.entity.Administrator">
+        SELECT * FROM user WHERE id = #{id} AND is_admin = 1
+    </select>
+
+    <select id="findByPhone" resultType="com.hd.hd_backend.entity.Administrator">
+        SELECT * FROM user WHERE phone = #{phone} AND is_admin = 1
+    </select>
+
+    <update id="updateAdmin" parameterType="com.hd.hd_backend.entity.Administrator">
+        UPDATE user
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="profilePicture != null">profile_picture = #{profilePicture},</if>
+            <if test="phone != null">phone = #{phone},</if>
+        </set>
+        WHERE id = #{id} AND is_admin = 1
+    </update>
+</mapper> 

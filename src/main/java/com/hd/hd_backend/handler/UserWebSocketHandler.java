@@ -563,6 +563,17 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     if (jsonResult.has("result") && jsonResult.getJSONArray("result").length() > 0) {
                         JSONObject dish = jsonResult.getJSONArray("result").getJSONObject(0);
                         String dishName = dish.getString("name");
+                        
+                        // 判断是否为"非菜"
+                        if ("非菜".equals(dishName)) {
+                            session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                WebSocketCode.FOOD_IDENTIFY_FAIL.ordinal(),
+                                "未能识别到食物，请重新拍照",
+                                "error_message"
+                            )));
+                            break;
+                        }
+                        
                         double calories = dish.getDouble("calorie");
                         
                         // 修改为模糊搜索
@@ -674,6 +685,22 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_MARK_SUCCESS.ordinal(), "通知标记成功","message")));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.NOTIFICATION_MARK_FAIL.ordinal(), e.getMessage(),"error_message")));
+                }
+                break;
+            case "getAllComments":
+                try {
+                    List<CommentDTO> comments = commentService.getAllComments();
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.COMMENT_GET_SUCCESS.ordinal(),
+                        comments,
+                        "data"
+                    )));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.COMMENT_GET_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
                 }
                 break;
             default:

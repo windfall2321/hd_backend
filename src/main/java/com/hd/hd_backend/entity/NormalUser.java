@@ -15,7 +15,7 @@ public class NormalUser extends User {
 
     private Integer isBlocked;
 
-    private String phone;
+
 
     // Getters and Setters
 
@@ -70,13 +70,7 @@ public class NormalUser extends User {
         this.isBlocked = isBlocked;
     }
 
-    public String getPhone() {
-        return phone;
-    }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     public NormalUser(){
         this.profilePicture="https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800";

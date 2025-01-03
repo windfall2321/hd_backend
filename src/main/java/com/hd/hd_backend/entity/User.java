@@ -6,7 +6,14 @@ public class User {
     String password;
     String profilePicture;
     Integer isAdmin;
+    String phone;
 
+    public String getPhone() {
+        return phone;
+    }
+public void setPhone(String phone) {
+        this.phone = phone;
+}
     public Integer getIsAdmin() {
         return isAdmin;
     }

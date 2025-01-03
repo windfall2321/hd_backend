@@ -83,4 +83,11 @@
         LEFT JOIN food_item fi ON fr.food_id = fi.id
         WHERE fr.user_id = #{userId}
     </select>
+
+    <select id="findAllNormalUsers" resultType="com.hd.hd_backend.entity.NormalUser">
+        SELECT u.*, n.weight, n.age, n.height, n.gender, n.activity_factor, n.is_blocked
+        FROM user u
+        LEFT JOIN normal_user n ON u.id = n.id
+        WHERE u.is_admin = 0
+    </select>
 </mapper> 

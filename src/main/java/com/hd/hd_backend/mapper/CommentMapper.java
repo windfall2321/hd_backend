@@ -14,4 +14,5 @@ public interface CommentMapper {
     void updateComment(Comment comment);
     List<CommentDTO> getPostComments(@Param("postId") Integer postId);
     List<CommentDTO> getUserComments(@Param("userId") Integer userId);
+    List<CommentDTO> getAllComments();
 } 

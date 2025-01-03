@@ -30,4 +30,11 @@
         LEFT JOIN user u ON c.user_id = u.id 
         WHERE c.user_id = #{userId}
     </select>
+
+    <select id="getAllComments" resultType="com.hd.hd_backend.dto.CommentDTO">
+        SELECT c.*, u.name as commentUserName, u.profile_picture as commentUserProfilePicture
+        FROM comment c
+        LEFT JOIN user u ON c.user_id = u.id 
+        ORDER BY c.timestamp DESC
+    </select>
 </mapper> 

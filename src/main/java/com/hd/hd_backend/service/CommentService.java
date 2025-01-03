@@ -10,4 +10,5 @@ public interface CommentService {
     void updateComment(Comment comment);
     List<CommentDTO> getPostComments(Integer postId);
     List<CommentDTO> getUserComments(Integer userId);
+    List<CommentDTO> getAllComments();
 } 

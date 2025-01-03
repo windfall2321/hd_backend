@@ -38,4 +38,9 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDTO> getUserComments(Integer userId) {
         return commentMapper.getUserComments(userId);
     }
+
+    @Override
+    public List<CommentDTO> getAllComments() {
+        return commentMapper.getAllComments();
+    }
 } 

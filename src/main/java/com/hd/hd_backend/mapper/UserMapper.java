@@ -5,6 +5,8 @@ import com.hd.hd_backend.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
     User findByName(@Param("name") String name);
@@ -14,6 +16,5 @@ public interface UserMapper {
     int insertUser(User user);
     void blockById (@Param("id") int id);
     void update(NormalUser user);
-
-
+    List<NormalUser> findAllNormalUsers();
 } 
