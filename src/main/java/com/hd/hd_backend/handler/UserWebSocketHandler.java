@@ -585,33 +585,41 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         // 修改为模糊搜索
                         FoodItem existingFood = foodService.findByNameLike("%" + dishName + "%");
                         
-                        if (existingFood == null) {
-                            // 创建新的食物项
-                            FoodItem newFood = new FoodItem();
-                            newFood.setName(dishName);
-                            newFood.setCalories((int)calories);
-                            newFood.setType("其他");  // 默认类型
-                            // 其他营养成分设为null
-                            newFood.setFat(null);
-                            newFood.setProtein(null);
-                            newFood.setCarbohydrates(null);
-                            newFood.setDietaryFiber(null);
-                            newFood.setPotassium(null);
-                            newFood.setSodium(null);
-                            
-                            // 保存到数据库
-                            foodService.addFoodItem(newFood);
+                        if (existingFood != null) {
+//                            // 创建新的食物项
+//                            FoodItem newFood = new FoodItem();
+//                            newFood.setName(dishName);
+//                            newFood.setCalories((int)calories);
+//                            newFood.setType("其他");  // 默认类型
+//                            // 其他营养成分设为null
+//                            newFood.setFat(-1.0);
+//                            newFood.setProtein(-1.0);
+//                            newFood.setCarbohydrates(-1.0);
+//                            newFood.setDietaryFiber(-1.0);
+//                            newFood.setPotassium(-1.0);
+//                            newFood.setSodium(-1.0);
+//
+//                            // 保存到数据库
+//                            foodService.addFoodItem(newFood);
                             
                             // 获取插入后的完整记录，使用模糊搜索
-                            existingFood = foodService.findByNameLike("%" + dishName + "%");
+//                            existingFood = foodService.findByNameLike("%" + dishName + "%");
+                            session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                    WebSocketCode.FOOD_IDENTIFY_SUCCESS.ordinal(),
+                                    existingFood,
+                                    "data"
+                            )));
                         }
                         
                         // 返回食物信息给前端
-                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                            WebSocketCode.FOOD_IDENTIFY_SUCCESS.ordinal(),
-                            existingFood,
-                            "data"
-                        )));
+                        else {
+                            session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                    WebSocketCode.FOOD_IDENTIFY_FAIL.ordinal(),
+                                    "未能识别菜品",
+                                    "error_message"
+                            )));
+                        }
+
                     } else {
                         session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
                             WebSocketCode.FOOD_IDENTIFY_FAIL.ordinal(),
