@@ -11,4 +11,8 @@ public interface AdminService {
     List<NormalUser> getAllUsers() throws Exception;
     void blockUser(Integer userId) throws Exception;
     void unblockUser(Integer userId) throws Exception;
+    void offendPost(Integer postId) throws Exception;
+    void unoffendPost(Integer postId) throws Exception;
+    void offendComment(Integer commentId) throws Exception;
+    void unoffendComment(Integer commentId) throws Exception;
 }

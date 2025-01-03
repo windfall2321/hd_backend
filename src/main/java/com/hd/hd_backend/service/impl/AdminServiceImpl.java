@@ -2,8 +2,12 @@ package com.hd.hd_backend.service.impl;
 
 import com.hd.hd_backend.entity.Administrator;
 import com.hd.hd_backend.entity.NormalUser;
+import com.hd.hd_backend.entity.Post;
+import com.hd.hd_backend.entity.Comment;
 import com.hd.hd_backend.mapper.AdministratorMapper;
 import com.hd.hd_backend.mapper.UserMapper;
+import com.hd.hd_backend.mapper.PostMapper;
+import com.hd.hd_backend.mapper.CommentMapper;
 import com.hd.hd_backend.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,12 @@ public class AdminServiceImpl implements AdminService {
     
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private PostMapper postMapper;
+
+    @Autowired
+    private CommentMapper commentMapper;
 
     @Override
     public Administrator login(Administrator admin) throws Exception {
@@ -89,5 +99,45 @@ public class AdminServiceImpl implements AdminService {
         }
         user.setIsBlocked(0);
         userMapper.update(user);
+    }
+
+    @Override
+    public void offendPost(Integer postId) throws Exception {
+        Post post = postMapper.findById(postId);
+        if (post == null) {
+            throw new Exception("帖子不存在");
+        }
+        post.setIsOffending(1);
+        postMapper.updatePost(post);
+    }
+
+    @Override
+    public void unoffendPost(Integer postId) throws Exception {
+        Post post = postMapper.findById(postId);
+        if (post == null) {
+            throw new Exception("帖子不存在");
+        }
+        post.setIsOffending(0);
+        postMapper.updatePost(post);
+    }
+
+    @Override
+    public void offendComment(Integer commentId) throws Exception {
+        Comment comment = commentMapper.findById(commentId);
+        if (comment == null) {
+            throw new Exception("评论不存在");
+        }
+        comment.setIsOffending(1);
+        commentMapper.updateComment(comment);
+    }
+
+    @Override
+    public void unoffendComment(Integer commentId) throws Exception {
+        Comment comment = commentMapper.findById(commentId);
+        if (comment == null) {
+            throw new Exception("评论不存在");
+        }
+        comment.setIsOffending(0);
+        commentMapper.updateComment(comment);
     }
 }

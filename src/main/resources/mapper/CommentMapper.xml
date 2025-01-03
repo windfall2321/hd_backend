@@ -37,4 +37,8 @@
         LEFT JOIN user u ON c.user_id = u.id 
         ORDER BY c.timestamp DESC
     </select>
+
+    <select id="findById" resultType="com.hd.hd_backend.entity.Comment">
+        SELECT * FROM comment WHERE comment_id = #{commentId}
+    </select>
 </mapper> 
