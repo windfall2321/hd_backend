@@ -359,13 +359,16 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 break;
             case "createPost":
-                if (!session.getAttributes().containsKey("userId")) {
+                if ((!session.getAttributes().containsKey("userId"))&&(!session.getAttributes().containsKey("adminId"))) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.POST_CREATE_FAIL.ordinal(), "用户未登录","error_message")));
                     break;
                 }
                 try {
                     Post post = objectMapper.readValue(parts[1], Post.class);
-                    post.setUserId((Integer) session.getAttributes().get("userId"));
+                    if(session.getAttributes().containsKey("userId"))
+                        post.setUserId((Integer) session.getAttributes().get("userId"));
+                    else
+                        post.setUserId((Integer) session.getAttributes().get("adminId"));
 
                     //post.setTimestamp(time);
 
