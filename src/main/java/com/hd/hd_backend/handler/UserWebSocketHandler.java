@@ -81,7 +81,7 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                         User user = userService.login( User);
                         session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(WebSocketCode.LOGIN_SUCCESS.ordinal(),user,"data")) );
                         WebSocketSessionManager.addSession(user.getId(), session);
-                        if(user.getIsAdmin()=='0')
+                        if(user.getIsAdmin()==0)
                             session.getAttributes().put("userId", user.getId());
                         else
                             session.getAttributes().put("adminId", user.getId());
@@ -697,13 +697,13 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 try {
                     List<CommentDTO> comments = commentService.getAllComments();
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                        WebSocketCode.COMMENT_GET_SUCCESS.ordinal(),
+                        WebSocketCode. COMMENT_GET_ALL_SUCCESS.ordinal(),
                         comments,
                         "data"
                     )));
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                        WebSocketCode.COMMENT_GET_FAIL.ordinal(),
+                        WebSocketCode.COMMENT_GET_ALL_FAIL.ordinal(),
                         e.getMessage(),
                         "error_message"
                     )));
