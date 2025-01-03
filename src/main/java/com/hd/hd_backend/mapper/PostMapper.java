@@ -14,4 +14,5 @@ public interface PostMapper {
     void updatePost(Post post);
     List<PostDTO> findVisiblePosts();
     List<PostDTO> findUserPosts(@Param("userId") Integer userId);
+    Post findById(@Param("postId") Integer postId);
 } 

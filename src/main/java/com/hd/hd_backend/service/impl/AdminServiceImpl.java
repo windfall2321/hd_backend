@@ -4,10 +4,12 @@ import com.hd.hd_backend.entity.Administrator;
 import com.hd.hd_backend.entity.NormalUser;
 import com.hd.hd_backend.entity.Post;
 import com.hd.hd_backend.entity.Comment;
+import com.hd.hd_backend.entity.Notification;
 import com.hd.hd_backend.mapper.AdministratorMapper;
 import com.hd.hd_backend.mapper.UserMapper;
 import com.hd.hd_backend.mapper.PostMapper;
 import com.hd.hd_backend.mapper.CommentMapper;
+import com.hd.hd_backend.mapper.NotificationMapper;
 import com.hd.hd_backend.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private CommentMapper commentMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Override
     public Administrator login(Administrator admin) throws Exception {
@@ -89,6 +94,13 @@ public class AdminServiceImpl implements AdminService {
         }
         user.setIsBlocked(1);
         userMapper.update(user);
+
+        // 创建并发送通知
+        Notification notification = new Notification();
+        notification.setUserId(userId);
+        notification.setData("您的账号已被管理员封禁");
+        notification.setType(1); // 1表示系统通知
+        notificationMapper.insertNotification(notification);
     }
 
     @Override
@@ -99,6 +111,13 @@ public class AdminServiceImpl implements AdminService {
         }
         user.setIsBlocked(0);
         userMapper.update(user);
+
+        // 创建并发送通知
+        Notification notification = new Notification();
+        notification.setUserId(userId);
+        notification.setData("您的账号已被管理员解封");
+        notification.setType(1);
+        notificationMapper.insertNotification(notification);
     }
 
     @Override
@@ -109,6 +128,13 @@ public class AdminServiceImpl implements AdminService {
         }
         post.setIsOffending(1);
         postMapper.updatePost(post);
+
+        // 创建并发送通知
+        Notification notification = new Notification();
+        notification.setUserId(post.getUserId());
+        notification.setData("您的帖子(ID:" + postId + ")已被标记为违规");
+        notification.setType(1);
+        notificationMapper.insertNotification(notification);
     }
 
     @Override
@@ -119,6 +145,13 @@ public class AdminServiceImpl implements AdminService {
         }
         post.setIsOffending(0);
         postMapper.updatePost(post);
+
+        // 创建并发送通知
+        Notification notification = new Notification();
+        notification.setUserId(post.getUserId());
+        notification.setData("您的帖子(ID:" + postId + ")已被取消违规标记");
+        notification.setType(1);
+        notificationMapper.insertNotification(notification);
     }
 
     @Override
@@ -129,6 +162,13 @@ public class AdminServiceImpl implements AdminService {
         }
         comment.setIsOffending(1);
         commentMapper.updateComment(comment);
+
+        // 创建并发送通知
+        Notification notification = new Notification();
+        notification.setUserId(comment.getUserId());
+        notification.setData("您的评论(ID:" + commentId + ")已被标记为违规");
+        notification.setType(1);
+        notificationMapper.insertNotification(notification);
     }
 
     @Override
@@ -139,5 +179,12 @@ public class AdminServiceImpl implements AdminService {
         }
         comment.setIsOffending(0);
         commentMapper.updateComment(comment);
+
+        // 创建并发送通知
+        Notification notification = new Notification();
+        notification.setUserId(comment.getUserId());
+        notification.setData("您的评论(ID:" + commentId + ")已被取消违规标记");
+        notification.setType(1);
+        notificationMapper.insertNotification(notification);
     }
 }

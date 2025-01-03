@@ -32,4 +32,8 @@
         LEFT JOIN user u ON p.user_id = u.id 
         WHERE p.user_id = #{userId}
     </select>
+
+    <select id="findById" resultType="com.hd.hd_backend.entity.Post">
+        SELECT * FROM post WHERE post_id = #{postId}
+    </select>
 </mapper> 
