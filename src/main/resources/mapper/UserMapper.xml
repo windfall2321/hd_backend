@@ -31,7 +31,9 @@
     </insert>
 
     <update id="blockById">
-        UPDATE normal_user SET is_blocked=1 WHERE user_id=#{id}
+        UPDATE normal_user 
+        SET is_blocked = 1 
+        WHERE user_id = #{userId}
     </update>
 
     <update id="update" parameterType="com.hd.hd_backend.entity.NormalUser">

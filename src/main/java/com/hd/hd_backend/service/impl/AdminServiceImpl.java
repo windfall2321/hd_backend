@@ -92,14 +92,13 @@ public class AdminServiceImpl implements AdminService {
         if (user == null) {
             throw new Exception("用户不存在");
         }
-        user.setIsBlocked(1);
-        userMapper.update(user);
-
-        // 创建并发送通知
+        
+        userMapper.blockById(userId);
+        
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setData("您的账号已被管理员封禁");
-        notification.setType(1); // 1表示系统通知
+        notification.setType(1);
         notificationMapper.insertNotification(notification);
     }
 

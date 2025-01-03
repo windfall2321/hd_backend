@@ -14,7 +14,7 @@ public interface UserMapper {
     NormalUser findById(@Param("id") Integer id);
     void insertNormalUser(NormalUser user);
     int insertUser(User user);
-    void blockById (@Param("id") Integer id);
+    void blockById(@Param("userId") Integer userId);
     void update(NormalUser user);
     List<NormalUser> findAllNormalUsers();
 } 
