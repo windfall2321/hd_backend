@@ -10,4 +10,5 @@ public interface PostService {
     void updatePost(Post post);
     List<PostDTO> findVisiblePosts();
     List<PostDTO> findUserPosts(Integer userId);
+    List<PostDTO> getAllPosts();
 } 

@@ -38,4 +38,9 @@ public class PostServiceImpl implements PostService {
     public List<PostDTO> findUserPosts(Integer userId) {
         return postMapper.findUserPosts(userId);
     }
+
+    @Override
+    public List<PostDTO> getAllPosts() {
+        return postMapper.getAllPosts();
+    }
 } 

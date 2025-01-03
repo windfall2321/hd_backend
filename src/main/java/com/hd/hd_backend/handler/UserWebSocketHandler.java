@@ -918,6 +918,31 @@ public class UserWebSocketHandler extends TextWebSocketHandler {
                 }
                 break;
 
+            case "getAllPosts":
+                if (!session.getAttributes().containsKey("adminId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.POST_GET_FAIL.ordinal(),
+                        "管理员未登录",
+                        "error_message"
+                    )));
+                    break;
+                }
+                try {
+                    List<PostDTO> allPosts = postService.getAllPosts();
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.POST_GET_SUCCESS.ordinal(),
+                        allPosts,
+                        "data"
+                    )));
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.POST_GET_FAIL.ordinal(),
+                        e.getMessage(),
+                        "error_message"
+                    )));
+                }
+                break;
+
             default:
                 session.sendMessage(new TextMessage("未知操作"));
         }

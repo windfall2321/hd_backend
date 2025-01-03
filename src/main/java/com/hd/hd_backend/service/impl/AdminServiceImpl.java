@@ -11,8 +11,13 @@ import com.hd.hd_backend.mapper.PostMapper;
 import com.hd.hd_backend.mapper.CommentMapper;
 import com.hd.hd_backend.mapper.NotificationMapper;
 import com.hd.hd_backend.service.AdminService;
+import com.hd.hd_backend.utils.JsonUtils;
+import com.hd.hd_backend.utils.WebSocketCode;
+import com.hd.hd_backend.utils.WebSocketSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.List;
 
@@ -32,6 +37,30 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private NotificationMapper notificationMapper;
+
+    private void sendNotificationToUser(Integer userId, String message, Notification notification) {
+        try {
+            // 先保存通知到数据库
+            notification.setSent(0);  // 默认设置为未发送
+            notificationMapper.insertNotification(notification);
+
+            // 尝试实时发送消息
+            WebSocketSession userSession = WebSocketSessionManager.getSession(userId);
+            if (userSession != null && userSession.isOpen()) {
+                userSession.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                    WebSocketCode.NOTIFICATION_GET_SUCCESS.ordinal(),
+                    message,
+                    "message"
+                )));
+                // 用户在线且发送成功，更新sent状态为1
+                notification.setSent(1);
+                notificationMapper.updateNotification(notification);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 发送失败时不需要额外处理，因为消息已经以sent=0保存在数据库中
+        }
+    }
 
     @Override
     public Administrator login(Administrator admin) throws Exception {
@@ -95,11 +124,14 @@ public class AdminServiceImpl implements AdminService {
         
         userMapper.blockById(userId);
         
+        // 创建通知
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setData("您的账号已被管理员封禁");
         notification.setType(1);
-        notificationMapper.insertNotification(notification);
+        
+        // 发送通知并根据发送状态更新sent字段
+        sendNotificationToUser(userId, "您的账号已被管理员封禁", notification);
     }
 
     @Override
@@ -111,12 +143,14 @@ public class AdminServiceImpl implements AdminService {
         user.setIsBlocked(0);
         userMapper.update(user);
 
-        // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setData("您的账号已被管理员解封");
         notification.setType(1);
         notificationMapper.insertNotification(notification);
+        
+        // 实时推送消息
+        sendNotificationToUser(userId, "您的账号已被管理员解封", notification);
     }
 
     @Override
@@ -128,12 +162,13 @@ public class AdminServiceImpl implements AdminService {
         post.setIsOffending(1);
         postMapper.updatePost(post);
 
-        // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(post.getUserId());
-        notification.setData("您的帖子(标题:" + post.getTitle() + ")已被标记为违规");
+        String message = "您的帖子(标题:" + post.getTitle() + ")已被标记为违规";
+        notification.setData(message);
         notification.setType(1);
-        notificationMapper.insertNotification(notification);
+        
+        sendNotificationToUser(post.getUserId(), message, notification);
     }
 
     @Override
@@ -145,12 +180,15 @@ public class AdminServiceImpl implements AdminService {
         post.setIsOffending(0);
         postMapper.updatePost(post);
 
-        // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(post.getUserId());
-        notification.setData("您的帖子(标题:" + post.getTitle()  + ")已被取消违规标记");
+        String message = "您的帖子(标题:" + post.getTitle() + ")已被取消违规标记";
+        notification.setData(message);
         notification.setType(1);
         notificationMapper.insertNotification(notification);
+        
+        // 实时推送消息
+        sendNotificationToUser(post.getUserId(), message, notification);
     }
 
     @Override
@@ -162,12 +200,15 @@ public class AdminServiceImpl implements AdminService {
         comment.setIsOffending(1);
         commentMapper.updateComment(comment);
 
-        // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(comment.getUserId());
-        notification.setData("您的评论(内容:" + comment.getContent() .substring(0,10)+ "……)已被标记为违规");
+        String message = "您的评论(内容:" + comment.getContent().substring(0,10) + "...)已被标记为违规";
+        notification.setData(message);
         notification.setType(1);
         notificationMapper.insertNotification(notification);
+        
+        // 实时推送消息
+        sendNotificationToUser(comment.getUserId(), message, notification);
     }
 
     @Override
@@ -179,11 +220,14 @@ public class AdminServiceImpl implements AdminService {
         comment.setIsOffending(0);
         commentMapper.updateComment(comment);
 
-        // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(comment.getUserId());
-        notification.setData("您的评论(内容:" + comment.getContent() .substring(0,10)+ "……)已被取消违规标记");
+        String message = "您的评论(内容:" + comment.getContent().substring(0,10) + "...)已被取消违规标记";
+        notification.setData(message);
         notification.setType(1);
         notificationMapper.insertNotification(notification);
+        
+        // 实时推送消息
+        sendNotificationToUser(comment.getUserId(), message, notification);
     }
 }

@@ -36,4 +36,11 @@
     <select id="findById" resultType="com.hd.hd_backend.entity.Post">
         SELECT * FROM post WHERE post_id = #{postId}
     </select>
+
+    <select id="getAllPosts" resultType="com.hd.hd_backend.dto.PostDTO">
+        SELECT p.*, u.name as postUserName
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        ORDER BY p.timestamp DESC
+    </select>
 </mapper> 
