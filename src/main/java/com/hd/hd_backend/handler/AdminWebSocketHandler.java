@@ -26,7 +26,7 @@ public class AdminWebSocketHandler extends TextWebSocketHandler {
         String action = parts[0];
 
         switch (action) {
-            case "adminLogin":
+            case "login":
                 Administrator loginAdmin = JsonUtils.fromJson(parts[1], Administrator.class);
                 try {
                     Administrator admin = adminService.login(loginAdmin);
