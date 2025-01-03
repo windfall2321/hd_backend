@@ -132,7 +132,7 @@ public class AdminServiceImpl implements AdminService {
         // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(post.getUserId());
-        notification.setData("您的帖子(ID:" + postId + ")已被标记为违规");
+        notification.setData("您的帖子(标题:" + post.getTitle() + ")已被标记为违规");
         notification.setType(1);
         notificationMapper.insertNotification(notification);
     }
@@ -149,7 +149,7 @@ public class AdminServiceImpl implements AdminService {
         // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(post.getUserId());
-        notification.setData("您的帖子(ID:" + postId + ")已被取消违规标记");
+        notification.setData("您的帖子(标题:" + post.getTitle()  + ")已被取消违规标记");
         notification.setType(1);
         notificationMapper.insertNotification(notification);
     }
@@ -166,7 +166,7 @@ public class AdminServiceImpl implements AdminService {
         // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(comment.getUserId());
-        notification.setData("您的评论(ID:" + commentId + ")已被标记为违规");
+        notification.setData("您的评论(内容:" + comment.getContent() .substring(0,10)+ "……)已被标记为违规");
         notification.setType(1);
         notificationMapper.insertNotification(notification);
     }
@@ -183,7 +183,7 @@ public class AdminServiceImpl implements AdminService {
         // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(comment.getUserId());
-        notification.setData("您的评论(ID:" + commentId + ")已被取消违规标记");
+        notification.setData("您的评论(内容:" + comment.getContent() .substring(0,10)+ "……)已被取消违规标记");
         notification.setType(1);
         notificationMapper.insertNotification(notification);
     }

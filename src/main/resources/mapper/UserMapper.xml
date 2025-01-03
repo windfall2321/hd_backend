@@ -87,7 +87,7 @@
     <select id="findAllNormalUsers" resultType="com.hd.hd_backend.entity.NormalUser">
         SELECT u.*, n.weight, n.age, n.height, n.gender, n.activity_factor, n.is_blocked
         FROM user u
-        LEFT JOIN normal_user n ON u.id = n.id
+        LEFT JOIN normal_user n ON u.id = n.user_id
         WHERE u.is_admin = 0
     </select>
 </mapper> 
