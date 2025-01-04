@@ -140,16 +140,17 @@ public class AdminServiceImpl implements AdminService {
         if (user == null) {
             throw new Exception("用户不存在");
         }
-        user.setIsBlocked(0);
-        userMapper.update(user);
+        
+        // 直接调用新的解封方法
+        userMapper.unblockById(userId);
 
+        // 创建并发送通知
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setData("您的账号已被管理员解封");
         notification.setType(1);
-        notificationMapper.insertNotification(notification);
         
-        // 实时推送消息
+        // 发送通知并根据发送状态更新sent字段
         sendNotificationToUser(userId, "您的账号已被管理员解封", notification);
     }
 

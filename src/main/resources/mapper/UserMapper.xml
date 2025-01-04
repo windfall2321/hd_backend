@@ -86,6 +86,12 @@
         WHERE fr.user_id = #{userId}
     </select>
 
+    <update id="unblockById">
+        UPDATE normal_user
+        SET is_blocked = 0
+        WHERE user_id = #{userId}
+    </update>
+    
     <select id="findAllNormalUsers" resultType="com.hd.hd_backend.entity.NormalUser">
         SELECT u.*, n.weight, n.age, n.height, n.gender, n.activity_factor, n.is_blocked
         FROM user u

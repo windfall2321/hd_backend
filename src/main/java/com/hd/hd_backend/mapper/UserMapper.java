@@ -17,4 +17,5 @@ public interface UserMapper {
     void blockById(@Param("userId") Integer userId);
     void update(NormalUser user);
     List<NormalUser> findAllNormalUsers();
+    void unblockById(@Param("userId") Integer userId);
 } 
