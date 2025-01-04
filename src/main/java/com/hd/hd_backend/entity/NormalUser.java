@@ -78,61 +78,7 @@ public class NormalUser extends User {
     this.isAdmin=0;
     };
     
-    public void updateReminder() {
-        // 更新提醒设置
-    }
-    
 
-    public void viewPost(String postId) {
-        // 查看帖子
-    }
-    
-    public void commentOnPost(String postId, String content) {
-        // 评论帖子
-    }
-    
-    public void createPost(String title, String content) {
-        // 创建帖子
-    }
-    
-    public void viewComment(String commentId) {
-        // 查看评论
-    }
-    
-
-    
-    public static NormalUser getUserById(String userId) {
-        // 根据ID获取用户
-        return null;
-    }
-    
-    public static void addUser(NormalUser user) {
-        // 添加用户
-    }
-    
-    public static void removeUser(NormalUser user) {
-        // 移除用户
-    }
-    
-    public List<FoodRecord> viewFoodRecords() {
-        // 查看食物记录
-        return null;
-    }
-    
-    public void recoverPassword(String newPassword) {
-        this.password = newPassword;
-    }
-    
-    public void setReminder(String reminderTime) {
-        // 设置提醒
-    }
-    
-    public void addViolation(String description) {
-        // 添加违规记录
-    }
-    
-
-    
 
     public void update(NormalUser updateInfo) {
         if (updateInfo.getName() != null && !updateInfo.getName().isEmpty()) {

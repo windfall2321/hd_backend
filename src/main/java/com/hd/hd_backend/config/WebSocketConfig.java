@@ -10,18 +10,18 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
-    private final UserWebSocketHandler userWebSocketHandler;
+    private final WebSocketHandler webSocketHandler;
 //    private final AdminWebSocketHandler adminWebSocketHandler;
 
-    public WebSocketConfig(UserWebSocketHandler userWebSocketHandler, AdminWebSocketHandler adminWebSocketHandler) {
-        this.userWebSocketHandler = userWebSocketHandler;
+    public WebSocketConfig(WebSocketHandler webSocketHandler) {
+        this.webSocketHandler = webSocketHandler;
 //        this.adminWebSocketHandler = adminWebSocketHandler;
 
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(userWebSocketHandler, "/websocket")
+        registry.addHandler(webSocketHandler, "/websocket")
                 .setAllowedOrigins("*");
 //        registry.addHandler(adminWebSocketHandler, "/websocket")
 //                .setAllowedOrigins("*");
