@@ -46,7 +46,8 @@
             weight = #{weight},
             age = #{age},
             height = #{height},
-            phone = #{phone}
+            phone = #{phone},
+            point = #{point}
         WHERE nu.user_id = #{id};
 
     </update>

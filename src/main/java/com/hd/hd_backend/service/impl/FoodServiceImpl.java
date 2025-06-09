@@ -6,9 +6,13 @@ import com.hd.hd_backend.entity.FoodRecord;
 import com.hd.hd_backend.mapper.FoodMapper;
 import com.hd.hd_backend.mapper.FoodRecordMapper;
 import com.hd.hd_backend.service.FoodService;
+import com.hd.hd_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -19,6 +23,9 @@ public class FoodServiceImpl implements FoodService {
     
     @Autowired
     private FoodRecordMapper foodRecordMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<FoodItem> getAllFoodItems() {
@@ -43,11 +50,63 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public void addFoodRecord(FoodRecord foodRecord) throws Exception {
         try {
+            // 用户 ID 校验
+            if (foodRecord.getUserId() <= 0 || userService.getUserById(foodRecord.getUserId()) == null) {
+                throw new IllegalArgumentException("用户不存在");
+            }
+
+            // 食物 ID 校验
+            if (foodRecord.getFoodId() <= 0 || foodMapper.findById(foodRecord.getFoodId()) == null) {
+                throw new IllegalArgumentException("食物不存在");
+            }
+
+            // 食物重量校验
+            if (foodRecord.getFoodWeight() < 1 || foodRecord.getFoodWeight() > 99999) {
+                throw new IllegalArgumentException("食物重量必须在1到99999之间");
+            }
+
+            // 热量校验
+            if (foodRecord.getCalories() <= 0) {
+                throw new IllegalArgumentException("热量必须为正数");
+            }
+
+            // 可选营养素校验（允许为 null 或 > 0）
+            if (foodRecord.getFat() != 0 && foodRecord.getFat() <= 0) {
+                throw new IllegalArgumentException("脂肪含量必须为正数或为空");
+            }
+
+            if (foodRecord.getProtein() != 0 && foodRecord.getProtein() <= 0) {
+                throw new IllegalArgumentException("蛋白质含量必须为正数或为空");
+            }
+
+            if (foodRecord.getCarbohydrates() != 0 && foodRecord.getCarbohydrates() <= 0) {
+                throw new IllegalArgumentException("碳水化合物含量必须为正数或为空");
+            }
+
+            // 其他元素不能为负
+            if (foodRecord.getSodium() < 0 || foodRecord.getPotassium() < 0 || foodRecord.getDietaryFiber() < 0) {
+                throw new IllegalArgumentException("钠、钾或膳食纤维含量不能为负数");
+            }
+            if (foodRecord.getRecordTime() == null || foodRecord.getRecordTime().trim().isEmpty()) {
+                throw new IllegalArgumentException("记录时间不能为空");
+            }
+            LocalDateTime recordTime;
+
+            recordTime = LocalDateTime.parse(foodRecord.getRecordTime());
+
+            if (recordTime.isAfter(LocalDateTime.now())) {
+                throw new IllegalArgumentException("记录时间不能晚于当前时间");
+            }
+            // 插入记录
             foodRecordMapper.insert(foodRecord);
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
-            throw new Exception("添加食物记录失败");
+            throw new Exception("添加食物记录失败", e);
         }
     }
+
+
 
     @Override
     public void updateFoodRecord(FoodRecord foodRecord) throws Exception {

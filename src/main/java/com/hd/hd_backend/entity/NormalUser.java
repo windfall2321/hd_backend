@@ -15,10 +15,9 @@ public class NormalUser extends User {
 
     private Integer isBlocked;
 
-
+    private Integer point;
 
     // Getters and Setters
-
 
     public Double getWeight() {
         return weight;
@@ -44,8 +43,6 @@ public class NormalUser extends User {
         this.height = height;
     }
 
-
-
     public Integer getGender() {return gender;}
 
     public void setGender(Integer gender) {
@@ -60,8 +57,6 @@ public class NormalUser extends User {
         this.activityFactor =activityFactor;
     }
 
-
-
     public Integer getIsBlocked() {
         return isBlocked;
     }
@@ -70,16 +65,20 @@ public class NormalUser extends User {
         this.isBlocked = isBlocked;
     }
 
+    public Integer getPoint() {
+        return point;
+    }
 
+    public void setPoint(Integer point) {
+        this.point = point;
+    }
 
     public NormalUser(){
         this.profilePicture="https://img1.baidu.com/it/u=534429813,2995452219&fm=253&fmt=auto?w=800&h=800";
         this.isBlocked=0;
-    this.isAdmin=0;
+        this.isAdmin=0;
     };
     
-
-
     public void update(NormalUser updateInfo) {
         if (updateInfo.getName() != null && !updateInfo.getName().isEmpty()) {
             this.name = updateInfo.getName();
@@ -107,6 +106,9 @@ public class NormalUser extends User {
         }
         if (updateInfo.getActivityFactor() != null) {
             this.activityFactor = updateInfo.getActivityFactor();
+        }
+        if (updateInfo.getPoint() != null) {
+            this.point = updateInfo.getPoint();
         }
     }
 

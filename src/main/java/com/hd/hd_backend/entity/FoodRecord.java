@@ -8,19 +8,19 @@ public class FoodRecord {
 
     private String recordTime;
 
-    private int userId;
+    private int userId;//
 
-    private int foodId;
+    private int foodId;//
 
     private double foodWeight;
 
-    private int calories;
+    private int calories;//＞0
 
-    private double fat;
+    private double fat;//为空or大于0
 
-    private double protein;
+    private double protein;//为空or大于0
 
-    private double carbohydrates;
+    private double carbohydrates;//为空or大于0
 
     private double sodium;
 
