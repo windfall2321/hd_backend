@@ -5,6 +5,8 @@ import com.hd.hd_backend.dto.*;
 import com.hd.hd_backend.entity.*;
 import com.hd.hd_backend.service.*;
 import com.hd.hd_backend.utils.*;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.alibaba.dashscope.aigc.generation.GenerationParam;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
@@ -1033,6 +1037,89 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     session.getAttributes().remove("llmMessages");
                 }
                 break;
+            case "getRecipes":
+                try {
+                    // 1. 检查格式
+                    if (parts.length < 2) {
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                WebSocketCode.RECIPE_FAIL.ordinal(),
+                                "请求格式错误，应为 getRecipes: {...}",
+                                "error_message")));
+                        break;
+                    }
+
+                    // 2. 提取参数
+                    JSONObject json = new JSONObject(parts[1]);
+                    String foodName = json.getString("foodName");
+                    System.out.println("接收到食物名称: " + foodName);
+
+                    // 3. 构造 prompt
+                    String prompt = "请为我推荐三道以【" + foodName + "】为主要原料的健康食谱。"
+                            + "请用以下 JSON 数组格式返回结果，不要包含解释说明：\n"
+                            + "[{\"title\":\"菜名1\",\"description\":\"描述1\",\"calories\":热量1},"
+                            + "{\"title\":\"菜名2\",\"description\":\"描述2\",\"calories\":热量2},"
+                            + "{\"title\":\"菜名3\",\"description\":\"描述3\",\"calories\":热量3}]";
+
+                    List<Message> messages = new ArrayList<>();
+                    messages.add(LLMCaller.createMessage(Role.SYSTEM, "你是一位健康营养师，请严格按照JSON数组格式返回3个食谱推荐。"));
+                    messages.add(LLMCaller.createMessage(Role.USER, prompt));
+
+                    // 4. 调用 AI
+                    GenerationParam param = LLMCaller.createGenerationParam(messages);
+                    GenerationResult gresult = LLMCaller.callGenerationWithMessages(param);
+
+                    String response = "";
+                    if (gresult != null && gresult.getOutput() != null && gresult.getOutput().getChoices() != null
+                            && !gresult.getOutput().getChoices().isEmpty()) {
+                        response = gresult.getOutput().getChoices().get(0).getMessage().getContent();
+                    }
+
+                    System.out.println("=== 调用 LLM 返回的 response 原文 ===");
+                    System.out.println(response);
+                    System.out.println("===================================");
+
+                    // 5. 尝试将 response 转成 JSONArray
+                    JSONArray recipeArray;
+                    try {
+                        recipeArray = new JSONArray(response);
+                    } catch (JSONException e) {
+                        System.err.println("【错误】JSON解析失败，AI响应并非标准数组格式：" + e.getMessage());
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                WebSocketCode.RECIPE_FAIL.ordinal(),
+                                "AI 返回内容格式不正确，解析失败，请稍后重试。",
+                                "error_message")));
+                        break;
+                    }
+
+                    System.out.println("解析成功的 recipeArray: " + recipeArray);
+
+                    // 6. 包装响应对象并返回
+                    try {
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("foodName", foodName);
+                        result.put("data", new JSONArray(response).toList());  // 把 JSONArray 转为 List<Map>
+
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                WebSocketCode.RECIPE_LIST.ordinal(),
+                                result,
+                                "data")));
+                    } catch (Exception e) {
+                        System.err.println("【错误】构建响应 JSON 失败：" + e.getMessage());
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                WebSocketCode.RECIPE_FAIL.ordinal(),
+                                "生成推荐食谱响应失败，构建返回对象异常：" + e.getMessage(),
+                                "error_message")));
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                            WebSocketCode.RECIPE_FAIL.ordinal(),
+                            "生成推荐食谱失败，异常信息：" + e.getMessage(),
+                            "error_message")));
+                }
+                break;
+
 
             // 添加清除对话历史的case
             case "clearLLMHistory":

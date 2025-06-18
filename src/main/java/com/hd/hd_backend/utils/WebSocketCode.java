@@ -124,5 +124,8 @@ public enum WebSocketCode {
     LLM_QUERY_FAIL,       // LLM查询失败
     LLM_HISTORY_CLEARED,  // 对话历史已清除
     LLM_STREAM_CHUNK,     // LLM流式输出片段
-    LLM_STREAM_COMPLETE   // LLM流式输出完成
+    LLM_STREAM_COMPLETE,   // LLM流式输出完成
+
+    RECIPE_LIST,
+    RECIPE_FAIL
 }
