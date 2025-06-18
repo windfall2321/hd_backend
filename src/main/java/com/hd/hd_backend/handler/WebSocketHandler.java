@@ -983,27 +983,34 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     // 添加用户问题
                     messages.add(LLMCaller.createMessage(Role.USER, userQuestion));
 
-                    // 调用LLM（自动包含历史上下文）
-                    GenerationParam param = LLMCaller.createGenerationParam(messages);
-                    GenerationResult result = LLMCaller.callGenerationWithMessages(param);
-
-                    // 获取AI回复
-                    Message aiResponse = result.getOutput().getChoices().get(0).getMessage();
-                    String responseContent = aiResponse.getContent();
+                    // 使用流式输出调用LLM
+                    GenerationParam param = LLMCaller.createStreamGenerationParam(messages);
+                    
+                    // 流式调用LLM，实时发送每个chunk
+                    String responseContent = LLMCaller.callStreamGenerationWithMessages(param, chunk -> {
+                        try {
+                            // 发送每个chunk到前端
+                            session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                    WebSocketCode.LLM_STREAM_CHUNK.ordinal(),
+                                    chunk,
+                                    "stream_chunk")));
+                        } catch (Exception e) {
+                            System.err.println("Error sending stream chunk: " + e.getMessage());
+                        }
+                    });
 
                     // 保存AI回复到对话历史（同时保持session大小可控）
+                    Message aiResponse = LLMCaller.createMessage(Role.ASSISTANT, responseContent);
                     messages.add(aiResponse);
                     if (messages.size() > 20) { // 最多保留10轮对话（USER+ASSISTANT算一轮）
                         messages.subList(1, 3).clear(); // 保留系统提示，移除最早的一轮对话
                     }
 
-                    // 可选：持久化到数据库
-                    // conversationService.saveConversation(userId, userQuestion, responseContent);
-
+                    // 发送流式输出完成信号（在所有chunk发送完成后）
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
-                            WebSocketCode.LLM_QUERY_SUCCESS.ordinal(),
-                            responseContent,
-                            "data")));
+                            WebSocketCode.LLM_STREAM_COMPLETE.ordinal(),
+                            "流式输出完成",
+                            "stream_complete")));
 
                 } catch (Exception e) {
                     session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
