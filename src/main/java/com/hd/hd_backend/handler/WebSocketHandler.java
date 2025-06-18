@@ -970,14 +970,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     Integer userId = (Integer) session.getAttributes().get("userId");
                     String userQuestion = parts[1];
 
+                    // 获取用户信息
+                    NormalUser user;
+                    try {
+                        user = userService.getUserById(userId);
+                    } catch (Exception e) {
+                        session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                                WebSocketCode.LLM_QUERY_FAIL.ordinal(),
+                                "用户信息获取失败: " + e.getMessage(),
+                                "error_message")));
+                        break;
+                    }
+
                     // 从session或数据库获取历史对话（保持最多10轮）
                     List<Message> messages = (List<Message>) session.getAttributes()
                             .computeIfAbsent("llmMessages", k -> new ArrayList<Message>());
 
-                    // 如果是首轮对话，添加系统提示
+                    // 如果是首轮对话，添加包含用户信息的系统提示
                     if (messages.isEmpty()) {
-                        messages.add(LLMCaller.createMessage(Role.SYSTEM,
-                                "你是一个专业的健康顾问，请用中文回答用户关于饮食、运动和健康的问题"));
+                        String systemPrompt = UserPromptBuilder.buildUserSystemPrompt(user);
+                        messages.add(LLMCaller.createMessage(Role.SYSTEM, systemPrompt));
                     }
 
                     // 添加用户问题

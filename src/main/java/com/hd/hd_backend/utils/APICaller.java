@@ -9,8 +9,8 @@ import java.util.Base64;
 import java.net.URLEncoder;
 
 public class APICaller {
-    private static final String API_KEY = "TwJ32wK5MVr9I6eQ9V9ANm7E";
-    private static final String SECRET_KEY = "UpqcVhFHbylg44iffY6PzXGhggsIEBeW";
+    private static final String API_KEY = "UE5jOV27ZSU52adlaFg92ggV";
+    private static final String SECRET_KEY = "MND3HgJKqFFozpyNYfeJUyAwzdZxwDYT";
     private static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
 
     /**
