@@ -11,8 +11,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.dashscope.aigc.generation.GenerationParam;
+import com.alibaba.dashscope.aigc.generation.GenerationResult;
+import com.alibaba.dashscope.common.Message;
+import com.alibaba.dashscope.common.Role;
+
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
     @Autowired
@@ -604,24 +610,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         FoodItem existingFood = foodService.findByNameLike("%" + dishName + "%");
                         
                         if (existingFood != null) {
-//                            // 创建新的食物项
-//                            FoodItem newFood = new FoodItem();
-//                            newFood.setName(dishName);
-//                            newFood.setCalories((int)calories);
-//                            newFood.setType("其他");  // 默认类型
-//                            // 其他营养成分设为null
-//                            newFood.setFat(-1.0);
-//                            newFood.setProtein(-1.0);
-//                            newFood.setCarbohydrates(-1.0);
-//                            newFood.setDietaryFiber(-1.0);
-//                            newFood.setPotassium(-1.0);
-//                            newFood.setSodium(-1.0);
-//
-//                            // 保存到数据库
-//                            foodService.addFoodItem(newFood);
-                            
-                            // 获取插入后的完整记录，使用模糊搜索
-//                            existingFood = foodService.findByNameLike("%" + dishName + "%");
+
                             session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
                                     WebSocketCode.FOOD_IDENTIFY_SUCCESS.ordinal(),
                                     existingFood,
@@ -967,6 +956,72 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         "error_message"
                     )));
                 }
+                break;
+
+            case "askLLM":
+                if (!session.getAttributes().containsKey("userId")) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                            WebSocketCode.LLM_QUERY_FAIL.ordinal(),
+                            "用户未登录",
+                            "error_message")));
+                    break;
+                }
+                try {
+                    Integer userId = (Integer) session.getAttributes().get("userId");
+                    String userQuestion = parts[1];
+
+                    // 从session或数据库获取历史对话（保持最多10轮）
+                    List<Message> messages = (List<Message>) session.getAttributes()
+                            .computeIfAbsent("llmMessages", k -> new ArrayList<Message>());
+
+                    // 如果是首轮对话，添加系统提示
+                    if (messages.isEmpty()) {
+                        messages.add(LLMCaller.createMessage(Role.SYSTEM,
+                                "你是一个专业的健康顾问，请用中文回答用户关于饮食、运动和健康的问题"));
+                    }
+
+                    // 添加用户问题
+                    messages.add(LLMCaller.createMessage(Role.USER, userQuestion));
+
+                    // 调用LLM（自动包含历史上下文）
+                    GenerationParam param = LLMCaller.createGenerationParam(messages);
+                    GenerationResult result = LLMCaller.callGenerationWithMessages(param);
+
+                    // 获取AI回复
+                    Message aiResponse = result.getOutput().getChoices().get(0).getMessage();
+                    String responseContent = aiResponse.getContent();
+
+                    // 保存AI回复到对话历史（同时保持session大小可控）
+                    messages.add(aiResponse);
+                    if (messages.size() > 20) { // 最多保留10轮对话（USER+ASSISTANT算一轮）
+                        messages.subList(1, 3).clear(); // 保留系统提示，移除最早的一轮对话
+                    }
+
+                    // 可选：持久化到数据库
+                    // conversationService.saveConversation(userId, userQuestion, responseContent);
+
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                            WebSocketCode.LLM_QUERY_SUCCESS.ordinal(),
+                            responseContent,
+                            "data")));
+
+                } catch (Exception e) {
+                    session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                            WebSocketCode.LLM_QUERY_FAIL.ordinal(),
+                            "处理请求时出错: " + e.getMessage(),
+                            "error_message")));
+                    // 发生错误时清空对话历史避免状态异常
+                    session.getAttributes().remove("llmMessages");
+                }
+                break;
+
+            // 添加清除对话历史的case
+            case "clearLLMHistory":
+                session.getAttributes().remove("llmMessages");
+                session.sendMessage(new TextMessage(JsonUtils.toJsonMsg(
+                        WebSocketCode.LLM_HISTORY_CLEARED.ordinal(),
+                        "对话历史已清除",
+                        "message")));
                 break;
 
             default:
